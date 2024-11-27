@@ -1,0 +1,14 @@
+{
+  "name": "server-microtasks",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "docker compose -p microtasks -f docker-compose.yaml -f docker-compose.dev.yaml up --build --remove-orphans"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

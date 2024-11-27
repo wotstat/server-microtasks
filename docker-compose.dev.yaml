@@ -1,0 +1,5 @@
+services:
+  microtasks:
+    container_name: microtasks
+    build:
+      dockerfile: Dockerfile.dev

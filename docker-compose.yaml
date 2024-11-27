@@ -1,0 +1,25 @@
+services:
+  microtasks:
+    container_name: microtasks
+    restart: always
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app/src
+    environment:
+      - PORT=9000
+      - CLICKHOUSE_HOST=http://172.17.0.1:8123
+      - CLICKHOUSE_USER
+      - CLICKHOUSE_PASSWORD
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      bridge:
+        ipv4_address: 172.28.0.10
+
+networks:
+  bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
