@@ -17,6 +17,10 @@
     "forceConsistentCasingInFileNames": true,
     "types": [
       "bun-types"
-    ]
+    ],
+    "rootDir": "./src",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
   }
 }

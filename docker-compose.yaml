@@ -7,7 +7,6 @@ services:
     volumes:
       - ./src:/app/src
     environment:
-      - PORT=9000
       - CLICKHOUSE_HOST=http://172.17.0.1:8123
       - CLICKHOUSE_USER
       - CLICKHOUSE_PASSWORD
