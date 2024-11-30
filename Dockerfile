@@ -1,8 +1,7 @@
-FROM oven/bun:1 as base
+FROM oven/bun:1-alpine as base
 WORKDIR /app
 
-RUN apt update
-RUN apt install -y git
+RUN apk add --no-cache git
 
 COPY package.json ./
 COPY bun.lockb ./
