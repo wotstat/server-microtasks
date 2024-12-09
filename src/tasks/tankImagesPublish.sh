@@ -9,3 +9,13 @@ aws --endpoint-url=https://storage.yandexcloud.net/ \
   --exclude "*/**" \
   --cache-control 'max-age=31622400' \
   --profile wotstat
+
+
+aws --endpoint-url=https://storage.yandexcloud.net/ \
+  s3 cp ./gui/maps/icons/vehicle/small s3://static.wotstat.info/vehicles/small \
+  --recursive \
+  --exclude "*" \
+  --include "*.png" \
+  --exclude "*/**" \
+  --cache-control 'max-age=31622400' \
+  --profile wotstat
