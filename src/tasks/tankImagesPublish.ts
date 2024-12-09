@@ -7,14 +7,16 @@ const nationMap = {
   'Ch': 'china',
   'Cz': 'czech',
   'F': 'france',
-  'G': 'germany',
   'GB': 'uk',
+  'G': 'germany',
   'It': 'italy',
   'J': 'japan',
   'Pl': 'poland',
   'R': 'ussr',
   'S': 'sweden',
 }
+
+await $`rm -rf ./_proc`
 
 const nationEntries = Object.entries(nationMap)
 
@@ -32,8 +34,17 @@ for (const path of files) {
 
 console.log('Files:', files.length);
 
-await $`
-aws --endpoint-url=https://storage.yandexcloud.net/ \
+await $`aws --endpoint-url=https://storage.yandexcloud.net/ \
+  s3 cp ./_proc s3://static.wotstat.info/vehicles/shop \
+  --recursive \
+  --exclude "*" \
+  --include "*.png" \
+  --exclude "*/**" \
+  --cache-control 'max-age=31622400' \
+  --profile wotstat \
+  --delete
+`
+await $`aws --endpoint-url=https://storage.yandexcloud.net/ \
   s3 cp ./_proc s3://static.wotstat.info/vehicles/shop \
   --recursive \
   --exclude "*" \
