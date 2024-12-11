@@ -59,12 +59,12 @@ export async function load() {
     const version = await parseGameVersion(root)
 
     console.log(`Branch: ${branch}, Version: ${JSON.stringify(version)}`);
-    await loadNY25toys(root, branch, version)
-    await loadVehicles(root, branch, version)
-    await loadArenas(root, branch, version)
-    await loadLootbox(root, branch, version)
-    await loadArtefacts(root, branch, version)
-    await loadCustomizations(root, branch, version)
+    try { await loadNY25toys(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadVehicles(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadArenas(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadLootbox(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadArtefacts(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadCustomizations(root, branch, version) } catch (error) { console.error(error) }
   }
 
   console.log('All branches loaded');
