@@ -7,7 +7,6 @@ import { load as loadLootbox } from "./loaders/lootboxes";
 import { load as loadArtefacts } from "./loaders/artefacts";
 import { load as loadCustomizations } from "./loaders/customizations";
 import { load as loadVehicles } from "./loaders/vehicles";
-import { load as loadNY25toys } from "./loaders/ny25toys";
 
 // const BRANCHES = ['PT_RU']
 const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA']
@@ -59,7 +58,6 @@ export async function load() {
     const version = await parseGameVersion(root)
 
     console.log(`Branch: ${branch}, Version: ${JSON.stringify(version)}`);
-    try { await loadNY25toys(root, branch, version) } catch (error) { console.error(error) }
     try { await loadVehicles(root, branch, version) } catch (error) { console.error(error) }
     try { await loadArenas(root, branch, version) } catch (error) { console.error(error) }
     try { await loadLootbox(root, branch, version) } catch (error) { console.error(error) }

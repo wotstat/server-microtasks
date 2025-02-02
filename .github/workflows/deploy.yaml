@@ -5,6 +5,9 @@ on:
     branches: 
       - main
 
+  workflow_dispatch:
+    
+
 jobs:
   release:
     name: Create release
