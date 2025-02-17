@@ -41,8 +41,7 @@ await $`aws --endpoint-url=https://storage.yandexcloud.net/ \
   --include "*.png" \
   --exclude "*/**" \
   --cache-control 'max-age=31622400' \
-  --profile wotstat \
-  --delete
+  --profile wotstat
 `
 await $`aws --endpoint-url=https://storage.yandexcloud.net/ \
   s3 cp ./_proc s3://static.wotstat.info/vehicles/shop \
