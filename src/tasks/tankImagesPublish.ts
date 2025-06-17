@@ -14,6 +14,7 @@ const nationMap = {
   'Pl': 'poland',
   'R': 'ussr',
   'S': 'sweden',
+  'Un': 'intunion'
 }
 
 await $`rm -rf ./_proc`

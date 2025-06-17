@@ -7,6 +7,7 @@ import { load as loadLootbox } from "./loaders/lootboxes";
 import { load as loadArtefacts } from "./loaders/artefacts";
 import { load as loadCustomizations } from "./loaders/customizations";
 import { load as loadVehicles } from "./loaders/vehicles";
+import { load as loadVersion } from "./loaders/version";
 
 // const BRANCHES = ['PT_RU']
 const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA']
@@ -63,6 +64,7 @@ export async function load() {
     try { await loadLootbox(root, branch, version) } catch (error) { console.error(error) }
     try { await loadArtefacts(root, branch, version) } catch (error) { console.error(error) }
     try { await loadCustomizations(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadVersion(root, branch, version) } catch (error) { console.error(error) }
   }
 
   console.log('All branches loaded');
