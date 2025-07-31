@@ -5,3 +5,5 @@ services:
       dockerfile: Dockerfile.dev
     environment:
       - CLICKHOUSE_HOST=http://db.wotstat.info:80
+    volumes:
+      - ./dev-data:/data
