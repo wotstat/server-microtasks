@@ -10,7 +10,7 @@ export async function setupGit(root: string, url: string) {
 
   if (!isGitInit) {
     console.log('Git is not init. Cloning...');
-    await $`git clone ${url} ${root}`.quiet()
+    await $`git clone --depth 1 --no-single-branch ${url} ${root}`.quiet()
     console.log('Git clone done');
   }
 
