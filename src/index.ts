@@ -12,7 +12,16 @@ if (!await connect({ timeout: 10 })) {
 
 await wotAssetsLoad()
 await wotSrcLoad()
-schedule('0 4 * * *', async () => {
+
+let isWorking = false
+schedule('0 */2 * * *', async () => {
+
+  if (isWorking) return console.error('Task is already running');
+
+  isWorking = true
+
   await wotSrcLoad()
   await wotAssetsLoad()
+
+  isWorking = false
 });
