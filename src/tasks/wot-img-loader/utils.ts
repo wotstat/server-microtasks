@@ -1,7 +1,7 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 const defaultConfig = {
-  Bucket: 'static.wotstat.info',
+  Bucket: Bun.env.AWS_BUCKET,
   CacheControl: 'max-age=86400', // 1 day
   StorageClass: 'STANDARD_IA'
 } as const
@@ -45,6 +45,6 @@ export function filename(path: string) {
 export function filenameAndExtension(path: string) {
   const name = filename(path);
   const ext = path.split('.').pop()?.toLowerCase();
-  const nameWithoutExt = name.split('.').slice(0, -1).join('.');
+  const nameWithoutExt = name.split('.').slice(0, 1).join('.');
   return { name, ext, nameWithoutExt };
 }

@@ -18,14 +18,7 @@ const branchToGame: Record<string, 'mt' | 'wot'> = {
 }
 
 
-const s3Client = new S3Client({
-  credentials: {
-    accessKeyId: Bun.env.S3_ACCESS_KEY_ID!,
-    secretAccessKey: Bun.env.S3_SECRET_ACCESS_KEY!
-  },
-  region: 'ru-central1',
-  endpoint: 'https://storage.yandexcloud.net'
-});
+const s3Client = new S3Client();
 
 
 export async function load() {
