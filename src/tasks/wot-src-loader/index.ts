@@ -11,7 +11,7 @@ import { load as loadVersion } from "./loaders/version";
 import { hasBranchChanges, setupGit } from '../setupGit';
 
 // const BRANCHES = ['PT_RU']
-const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA']
+const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA', 'CT']
 const root = '/data/wot-src'
 
 export async function load() {
