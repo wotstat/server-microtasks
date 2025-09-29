@@ -10,7 +10,7 @@ import { load as loadVehicles } from "./loaders/vehicles";
 import { load as loadVersion } from "./loaders/version";
 import { hasBranchChanges, setupGit } from '../setupGit';
 
-// const BRANCHES = ['PT_RU']
+// const BRANCHES = ['RU']
 const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA', 'CT']
 const root = '/data/wot-src'
 
@@ -30,7 +30,7 @@ export async function load() {
       continue
     }
 
-    await $`git pull --ff-only`
+    await $`git pull --ff-only`.quiet()
 
     const version = await parseGameVersion(root)
 

@@ -22,6 +22,7 @@ type BoundingBox = {
 }
 
 type Gameplay = {
+  minimap: string,
   winnerIfTimeout: string,
   winnerIfExtermination: string,
   boundingBox: BoundingBox,
@@ -51,6 +52,7 @@ type Arena = {
   boundingBox: BoundingBox,
   roundLength: string,
   vehicleCamouflageKind: string,
+  minimap: string,
   gameplayTypes: {
     [key: string]: Partial<Gameplay>
   }
@@ -79,6 +81,7 @@ async function process(root: string, branch: string) {
     name: string,
     season: string,
     gameplay: string,
+    minimap: string,
     bbox: { bottomLeft: { x: number, y: number }, upperRight: { x: number, y: number } },
     winnerIfTimeout?: number,
     winnerIfExtermination?: number,
@@ -149,6 +152,7 @@ async function process(root: string, branch: string) {
       return {
         gameplay,
         bbox: bbox ? bboxParser(bbox) : undefined,
+        minimap: data.minimap,
         base,
         spawn,
         control,
@@ -165,6 +169,7 @@ async function process(root: string, branch: string) {
       season,
       ...g,
       bbox: g.bbox ?? bbox,
+      minimap: g.minimap ?? meta.minimap
     })) as any)
   }
 
@@ -189,6 +194,7 @@ export async function load(root: string, region: string, version: GameVersion) {
     id: t.id,
     name: t.name,
     season: t.season,
+    minimap: t.minimap,
     winnerIfTimeout: t.winnerIfTimeout,
     winnerIfExtermination: t.winnerIfExtermination,
     'bbox.bottomLeft': v2t(t.bbox.bottomLeft),

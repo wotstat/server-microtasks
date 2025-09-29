@@ -36,7 +36,7 @@ export async function load() {
       continue
     }
 
-    await $`git pull --ff-only`
+    await $`git pull --ff-only`.quiet()
 
     const version = (await Bun.file(`${root}/.metadata_version`).text()).split(' ')[0].trim();
     console.log(`Branch ${branch} updated to ${version}`);

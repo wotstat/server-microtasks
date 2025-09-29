@@ -8,15 +8,20 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
 
   const upload = uploader(game, version, bucket)
 
-  const minimapFiles = [...new Glob(`${root}/gui/maps/icons/map/*.png`).scanSync()]
-  for (const filePath of minimapFiles) {
-    const fileContent = await Bun.file(filePath).bytes()
+  const subfolders = ['', 'comp7/']
+  for (const subfolder of subfolders) {
+    const minimapFiles = [...new Glob(`${root}/gui/maps/icons/map/${subfolder}*.png`).scanSync()]
 
-    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
+    for (const filePath of minimapFiles) {
+      const fileContent = await Bun.file(filePath).bytes()
 
-    const webpBuffer = await sharp(fileContent).webp({ quality: 90, alphaQuality: 0 }).toBuffer()
-    await upload(`arenas/minimap/${name}.png`, fileContent)
-    await upload(`arenas/minimap/${name}.webp`, webpBuffer)
+      const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
+
+      const webpBuffer = await sharp(fileContent).webp({ quality: 90, alphaQuality: 0 }).toBuffer()
+
+      await upload(`arenas/minimap/${subfolder}${name}.png`, fileContent)
+      await upload(`arenas/minimap/${subfolder}${name}.webp`, webpBuffer)
+    }
   }
 
   const statsFiles = [...new Glob(`${root}/gui/maps/icons/map/stats/*.png`).scanSync()]
