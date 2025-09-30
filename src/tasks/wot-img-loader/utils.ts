@@ -26,6 +26,7 @@ export function uploader(game: 'mt' | 'wot', version: string, bucket: S3Client) 
       ContentType: contentType,
       Key: `${game}/latest/${path}`,
       Body: content,
+      CacheControl: 'max-age=3600' // 1 hour
     }))
 
     await bucket.send(new PutObjectCommand({
