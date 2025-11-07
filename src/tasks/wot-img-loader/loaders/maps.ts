@@ -1,7 +1,8 @@
 import { Glob } from "bun"
 import { S3Client } from "@aws-sdk/client-s3";
 import sharp from 'sharp'
-import { filenameAndExtension, uploader } from "../utils";
+import { uploader } from "../../../utils/assetsUploader";
+import { filenameAndExtension } from "../utils";
 
 
 export async function load(root: string, game: 'mt' | 'wot', version: string, bucket: S3Client) {

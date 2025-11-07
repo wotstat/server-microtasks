@@ -1,7 +1,8 @@
 import { Glob } from "bun"
 import { S3Client as AwsS3Client } from "@aws-sdk/client-s3";
 import sharp from 'sharp'
-import { filenameAndExtension, uploader } from "../utils";
+import { uploader } from "../../../utils/assetsUploader";
+import { filenameAndExtension } from "../utils";
 import { createSpriteAtlas } from "../spriteAtlas";
 import { S3Client } from 'bun'
 
