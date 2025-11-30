@@ -118,10 +118,12 @@ export async function loadMinimaps(cookies: string, version: string, bucket: S3C
 
   const minimapLinks: { title: string; tag: string, link: string }[] = [];
 
+  console.log(`Found ${arenasWithTags.length} arenas with tags, loading minimap links...`);
   for (const arena of arenasWithTags) {
     const link = await loadMinimapLink(cookies, arena.href);
     minimapLinks.push({ title: arena.title, tag: arena.tag!, link });
   }
+  console.log(`Loaded minimap links for ${minimapLinks.length} arenas, downloading and uploading minimaps...`);
 
   for (const minimap of minimapLinks) {
 

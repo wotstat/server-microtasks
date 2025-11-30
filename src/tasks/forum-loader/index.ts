@@ -66,10 +66,13 @@ export async function load() {
   const cookie = await calculateCookie();
 
   if (!cookie) return console.log('Failed to calculate forum cookie');
+  console.log(`Key cookie calculated: ${JSON.stringify(cookie)}`);
+
   const cookies = Object.entries(cookie).map(([k, v]) => `${k}=${v}`).join('; ');
   const version = await getLatestAssetsVersion()
 
   if (!version) return console.log('Failed to get latest assets version');
 
+  console.log('Begin loading minimaps for version', version);
   await loadMinimaps(cookies, version, s3Client);
 }
