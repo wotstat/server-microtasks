@@ -54,13 +54,18 @@ async function arenasList(cookies: string) {
     })
 
 
+  console.log('Loading arenas list from forum...');
   const res = await fetch('http://forum.tanki.su/index.php?/forum/580-%d0%ba%d0%b0%d1%80%d1%82%d1%8b/', { headers: { 'Cookie': cookies } });
+  console.log(`Fetching arenas list from ${res.url} - status: ${res.status}`);
   const text = await res.text();
+  console.log(`Fetched arenas list from ${res.url} - length: ${text.length}`);
 
   arenasParser.transform(text);
   pagesParser.transform(text);
 
   for (const pageLink of pageLinks) {
+    console.log(`Loading arenas list from page ${pageLink}...`);
+
     const res = await fetch(pageLink, { headers: { 'Cookie': cookies } });
     const text = await res.text();
     arenasParser.transform(text);
