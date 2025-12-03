@@ -25,7 +25,7 @@ export async function load(root: string, region: string, version: GameVersion) {
     gameVersionComp: version.comparable,
     datetime: Math.round(new Date().getTime() / 1000),
 
-    tag: `ny25_${t[0]}`,
+    tag: `ny26_${t[0]}`,
     name: t[1]
   }))
 
