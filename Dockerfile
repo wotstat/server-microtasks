@@ -1,4 +1,4 @@
-FROM oven/bun:1.2-alpine as base
+FROM oven/bun:1.2-alpine AS base
 WORKDIR /app
 
 RUN apk add --no-cache git
