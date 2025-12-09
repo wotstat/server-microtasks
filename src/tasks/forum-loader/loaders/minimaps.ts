@@ -55,10 +55,15 @@ async function arenasList(cookies: string) {
 
 
   console.log('Loading arenas list from forum...');
-  const res = await fetch('http://forum.tanki.su/index.php?/forum/580-%d0%ba%d0%b0%d1%80%d1%82%d1%8b/', { headers: { 'Cookie': cookies } });
+  const res = await fetch(
+    'http://forum.tanki.su/index.php?/forum/580-%d0%ba%d0%b0%d1%80%d1%82%d1%8b/',
+    { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(5000) }
+  );
   console.log(`Fetching arenas list from ${res.url} - status: ${res.status}`);
   const text = await res.text();
   console.log(`Fetched arenas list from ${res.url} - length: ${text.length}`);
+
+  await new Promise(r => setTimeout(r, 1000)); // to avoid rate limiting
 
   arenasParser.transform(text);
   pagesParser.transform(text);
