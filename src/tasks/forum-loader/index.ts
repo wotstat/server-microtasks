@@ -74,5 +74,9 @@ export async function load() {
   if (!version) return console.log('Failed to get latest assets version');
 
   console.log('Begin loading minimaps for version', version);
-  await loadMinimaps(cookies, version, s3Client);
+  try {
+    await loadMinimaps(cookies, version, s3Client);
+  } catch (error) {
+    console.error('Error loading minimaps:', error);
+  }
 }

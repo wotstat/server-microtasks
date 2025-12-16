@@ -56,7 +56,7 @@ async function arenasList(cookies: string) {
 
   const res = await fetch(
     'http://forum.tanki.su/index.php?/forum/580-%d0%ba%d0%b0%d1%80%d1%82%d1%8b/',
-    { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(5000) }
+    { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(60000) }
   );
   const text = await res.text();
 
