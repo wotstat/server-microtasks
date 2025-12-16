@@ -54,26 +54,46 @@ async function arenasList(cookies: string) {
     })
 
 
-  console.log('Loading arenas list from forum...');
   const res = await fetch(
     'http://forum.tanki.su/index.php?/forum/580-%d0%ba%d0%b0%d1%80%d1%82%d1%8b/',
     { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(5000) }
   );
-  console.log(`Fetching arenas list from ${res.url} - status: ${res.status}`);
   const text = await res.text();
-  console.log(`Fetched arenas list from ${res.url} - length: ${text.length}`);
 
   await new Promise(r => setTimeout(r, 1000)); // to avoid rate limiting
 
   arenasParser.transform(text);
   pagesParser.transform(text);
 
+  console.log(`Pages count: ${pageLinks.length}`);
+
   for (const pageLink of pageLinks) {
     console.log(`Loading arenas list from page ${pageLink}...`);
-    const res = await fetch(pageLink, { headers: { 'Cookie': cookies } });
+    const res = await fetch(pageLink, { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(10000) });
     console.log(`Fetching arenas list from page ${pageLink} - status: ${res.status}`);
-    const text = await res.text();
-    console.log(`Fetched arenas list from page ${pageLink}, length: ${text.length}`);
+
+    const readableBody = res.body
+    console.log(`Response body readable: ${readableBody != null}`);
+
+    let text = ''
+    if (readableBody) {
+      const reader = readableBody.getReader();
+      const decoder = new TextDecoder('utf-8');
+      let done = false;
+
+      while (!done) {
+        const { value, done: doneReading } = await reader.read();
+        console.log(`Read chunk: ${value?.length ?? 0} bytes, done: ${doneReading}`);
+
+        done = doneReading;
+        if (value) {
+          text += decoder.decode(value, { stream: !done });
+        }
+      }
+    }
+
+    // const text = await res.text();
+    // console.log(`Fetched arenas list from page ${pageLink}, length: ${text.length}`);
     await new Promise(r => setTimeout(r, 1000)); // to avoid rate limiting
 
     arenasParser.transform(text);
@@ -122,6 +142,8 @@ export async function loadMinimaps(cookies: string, version: string, bucket: S3C
 
   const arenas = (await arenasList(cookies))
   const tags = await arenasTag()
+
+  // return;
   const arenasWithTags = arenas
     .map(t => ({ ...t, tag: tags.get(t.title) || null }))
     .filter(t => t.tag != null);
