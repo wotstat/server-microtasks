@@ -69,7 +69,7 @@ async function arenasList(cookies: string) {
 
   for (const pageLink of pageLinks) {
     console.log(`Loading arenas list from page ${pageLink}...`);
-    const res = await fetch(pageLink, { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(10000) });
+    const res = await fetch(pageLink, { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(60000) });
     console.log(`Fetching arenas list from page ${pageLink} - status: ${res.status}`);
 
     const readableBody = res.body
