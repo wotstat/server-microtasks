@@ -70,9 +70,12 @@ async function arenasList(cookies: string) {
 
   for (const pageLink of pageLinks) {
     console.log(`Loading arenas list from page ${pageLink}...`);
-
     const res = await fetch(pageLink, { headers: { 'Cookie': cookies } });
+    console.log(`Fetching arenas list from page ${pageLink} - status: ${res.status}`);
     const text = await res.text();
+    console.log(`Fetched arenas list from page ${pageLink}, length: ${text.length}`);
+    await new Promise(r => setTimeout(r, 1000)); // to avoid rate limiting
+
     arenasParser.transform(text);
   }
 
