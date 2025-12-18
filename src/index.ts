@@ -23,8 +23,7 @@ schedule('0 */2 * * *', async () => {
 
   await wotSrcLoad()
   await wotAssetsLoad()
-  // can not load due fetch forum data issues
-  // await forumLoader()
+  await forumLoader()
 
   isWorking = false
 });

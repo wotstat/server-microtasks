@@ -53,49 +53,18 @@ async function arenasList(cookies: string) {
       }
     })
 
-
   const res = await fetch(
     'http://forum.tanki.su/index.php?/forum/580-%d0%ba%d0%b0%d1%80%d1%82%d1%8b/',
-    { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(60000) }
+    { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(30000) }
   );
   const text = await res.text();
-
-  await new Promise(r => setTimeout(r, 1000)); // to avoid rate limiting
 
   arenasParser.transform(text);
   pagesParser.transform(text);
 
-  console.log(`Pages count: ${pageLinks.length}`);
-
   for (const pageLink of pageLinks) {
-    console.log(`Loading arenas list from page ${pageLink}...`);
-    const res = await fetch(pageLink, { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(60000) });
-    console.log(`Fetching arenas list from page ${pageLink} - status: ${res.status}`);
-
-    const readableBody = res.body
-    console.log(`Response body readable: ${readableBody != null}`);
-
-    let text = ''
-    if (readableBody) {
-      const reader = readableBody.getReader();
-      const decoder = new TextDecoder('utf-8');
-      let done = false;
-
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        console.log(`Read chunk: ${value?.length ?? 0} bytes, done: ${doneReading}`);
-
-        done = doneReading;
-        if (value) {
-          text += decoder.decode(value, { stream: !done });
-        }
-      }
-    }
-
-    // const text = await res.text();
-    // console.log(`Fetched arenas list from page ${pageLink}, length: ${text.length}`);
-    await new Promise(r => setTimeout(r, 1000)); // to avoid rate limiting
-
+    const res = await fetch(pageLink, { headers: { 'Cookie': cookies }, signal: AbortSignal.timeout(30000) });
+    const text = await res.text();
     arenasParser.transform(text);
   }
 
@@ -136,11 +105,20 @@ async function arenasTag() {
   return new Map(result.data.map(x => [x.name, x.tag]));
 }
 
+async function tryCall<R>(fn: () => Promise<R>): Promise<R | null> {
+  return fn().catch(() => null);
+}
+
 export async function loadMinimaps(cookies: string, version: string, bucket: S3Client) {
 
   const upload = uploader('mt', version, bucket)
 
-  const arenas = (await arenasList(cookies))
+  const arenas = await tryCall(() => arenasList(cookies))
+  if (!arenas) {
+    console.error('Failed to load arenas list');
+    return;
+  }
+
   const tags = await arenasTag()
 
   const arenasWithTags = arenas
@@ -152,12 +130,10 @@ export async function loadMinimaps(cookies: string, version: string, bucket: S3C
 
   const minimapLinks: { title: string; tag: string, link: string }[] = [];
 
-  console.log(`Found ${arenasWithTags.length} arenas with tags, loading minimap links...`);
   for (const arena of arenasWithTags) {
     const link = await loadMinimapLink(cookies, arena.href);
     minimapLinks.push({ title: arena.title, tag: arena.tag!, link });
   }
-  console.log(`Loaded minimap links for ${minimapLinks.length} arenas, downloading and uploading minimaps...`);
 
   for (const minimap of minimapLinks) {
 
