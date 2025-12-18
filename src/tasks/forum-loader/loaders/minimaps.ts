@@ -143,7 +143,6 @@ export async function loadMinimaps(cookies: string, version: string, bucket: S3C
   const arenas = (await arenasList(cookies))
   const tags = await arenasTag()
 
-  // return;
   const arenasWithTags = arenas
     .map(t => ({ ...t, tag: tags.get(t.title) || null }))
     .filter(t => t.tag != null);
