@@ -8,7 +8,9 @@ import { load as loadArtefacts } from "./loaders/artefacts";
 import { load as loadCustomizations } from "./loaders/customizations";
 import { load as loadVehicles } from "./loaders/vehicles";
 import { load as loadVersion } from "./loaders/version";
+import { load as loadOptionalDevices } from "./loaders/optionalDevices";
 import { hasBranchChanges, setupGit } from '../setupGit';
+import { clickhouse } from '@/db';
 
 // const BRANCHES = ['RU']
 const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA', 'CT']
@@ -41,6 +43,20 @@ export async function load() {
     try { await loadArtefacts(root, branch, version) } catch (error) { console.error(error) }
     try { await loadCustomizations(root, branch, version) } catch (error) { console.error(error) }
     try { await loadVersion(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadOptionalDevices(root, branch, version) } catch (error) { console.error(error) }
+  }
+
+  for (const table of [
+    'WOT.vehicles_latest_mv',
+    'WOT.vehicles_localization_mv',
+    'WOT.arenas_localization_mv',
+    'WOT.arenas_latest_mv',
+    'WOT.lootboxes_localization_mv',
+    'WOT.artefacts_localization_mv',
+    'WOT.game_versions_latest_mv',
+    'WOT.optional_devices_latest_mv'
+  ]) {
+    await clickhouse.exec({ query: `system refresh view ${table}` })
   }
 
   console.log('All src branches loaded');

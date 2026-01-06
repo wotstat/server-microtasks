@@ -33,6 +33,13 @@ export class GetText {
     return this.transitions.get(msg) ?? fallback ?? msg
   }
 
+  public getSingleLineTranslation(msg: string, fallback?: string) {
+    return (this.transitions.get(msg) ?? fallback ?? msg)
+      .replaceAll('\n', ' ')
+      .replaceAll('\\n', ' ')
+      .replaceAll(/\s+/g, ' ')
+  }
+
   public getAll() {
     return this.transitions
   }
