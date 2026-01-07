@@ -1,29 +1,8 @@
 import { clickhouse } from "@/db";
 import { GetText } from '@/utils/GetText'
-import { lcMessagesPath, type GameVersion } from "../utils"
+import { lcMessagesPath, XML, type GameVersion } from "../utils"
 import { parseStringPromise } from "xml2js";
-
-type XML<T> = {
-  root: T
-}
-
-type VehicleFilter = {
-  minLevel?: string
-  maxLevel?: string
-  tags?: string
-  mandatoryTags?: string
-  nations?: string
-}
-
-type KPI = {
-  name: string
-  value: string
-}
-
-type KPIAggregate = {
-  name: string
-  mul: (KPI & { vehicleTypes: string })[]
-}
+import { KPI, parseKpi, parsePrice, parseVehicleFilter, Price, VehicleFilter } from "../utilsEquipments";
 
 type Device = {
   id: string
@@ -32,13 +11,7 @@ type Device = {
   longDescriptionSpecial?: string
   icon: string
   groupName: string
-  price: {
-    _?: string
-    'equipCoin': ''
-    'gold': ''
-    'credits': ''
-    'crystal': ''
-  } | string
+  price: Price
   tags: string
   notInShop?: 'true' | 'false'
   incompatibleTags: {
@@ -50,62 +23,11 @@ type Device = {
   }
   archetype: string
   tooltipSection: string
-  kpi: {
-    mul?: KPI | KPI[]
-    add?: KPI | KPI[]
-    aggregateMul?: KPIAggregate | KPIAggregate[]
-  }
+  kpi: KPI
 }
 
 type DevicesList = {
   [key: string]: Device
-}
-
-function tryParse(value: string | undefined): number | null {
-  if (value === undefined) {
-    return null;
-  }
-  const parsed = Number(value);
-  return isNaN(parsed) ? null : parsed;
-}
-
-function parseVehicleFilter(filter: VehicleFilter | undefined) {
-  if (!filter) return null;
-
-  return {
-    minLevel: tryParse(filter.minLevel),
-    maxLevel: tryParse(filter.maxLevel),
-    tags: filter.tags?.split(' ') ?? [],
-    mandatoryTags: filter.mandatoryTags?.split(' ') ?? [],
-    nations: filter.nations?.split(' ') ?? [],
-  }
-}
-
-function parseKpi(kpi: Device['kpi']) {
-  if (!kpi) return null;
-
-  function toArray<T>(kpiPart: T | T[] | undefined): T[] {
-    if (!kpiPart) return [];
-    return Array.isArray(kpiPart) ? kpiPart : [kpiPart];
-  }
-
-  const mul = toArray(kpi.mul).map(k => ({ name: k.name, value: Number(k.value), type: 'mul' }))
-  const add = toArray(kpi.add).map(k => ({ name: k.name, value: Number(k.value), type: 'add' }))
-  const aggregateMul = toArray(kpi.aggregateMul).map(k => ({
-    name: k.name,
-    type: 'mul',
-    mods: k.mul.map(m => ({
-      name: m.name,
-      value: Number(m.value),
-      type: 'mul',
-      vehicleTypes: m.vehicleTypes.split(' ')
-    }))
-  }))
-
-  return {
-    simple: [...mul, ...add].filter(t => t !== null),
-    aggregate: aggregateMul.filter(t => t !== null)
-  }
 }
 
 export async function load(root: string, region: string, version: GameVersion) {
@@ -115,13 +37,7 @@ export async function load(root: string, region: string, version: GameVersion) {
   const parsed = await parseStringPromise(data, { explicitArray: false }) as XML<DevicesList>
   const devices = Object.keys(parsed.root).filter(k => k != 'xmlns:xmlref').map(key => ({ ...parsed.root[key], tag: key }))
 
-  const price = devices.map(d => (typeof d.price === 'string' ?
-    { price: Number(d.price), currency: 'credits' } :
-    {
-      price: Number(d.price._),
-      currency: Object.keys(d.price).filter(k => k != '_')[0] || 'unknown'
-    })
-  )
+  const price = devices.map(d => parsePrice(d.price))
 
   const notInShop = devices.map(d => d.notInShop === 'true')
 
@@ -159,25 +75,23 @@ export async function load(root: string, region: string, version: GameVersion) {
     incompatibleTags: incompatibleTags[i],
     archetype: d.archetype,
     tooltipSection: d.tooltipSection,
-    kpiSimpleName: kpi[i]!.simple.map(k => k.name),
-    kpiSimpleValue: kpi[i]!.simple.map(k => k.value),
-    kpiSimpleType: kpi[i]!.simple.map(k => k.type),
 
-    kpiAggregateName: kpi[i]!.aggregate.map(k => k.name),
-    kpiAggregateType: kpi[i]!.aggregate.map(k => k.type),
-    kpiAggregateModsName: kpi[i]!.aggregate.map(k => k.mods.map(m => m.name)),
-    kpiAggregateModsValue: kpi[i]!.aggregate.map(k => k.mods.map(m => m.value)),
-    kpiAggregateModsVehicleTypes: kpi[i]!.aggregate.map(k => k.mods.map(m => m.vehicleTypes)),
+    kpiSimple: kpi[i]!.simple,
+    kpiAggregate: kpi[i]!.aggregate,
 
     vehicleIncludeMinLevel: vehicleFilter[i].include?.minLevel ?? null,
     vehicleIncludeMaxLevel: vehicleFilter[i].include?.maxLevel ?? null,
     vehicleIncludeTags: vehicleFilter[i].include?.tags ?? [],
     vehicleIncludeMandatoryTags: vehicleFilter[i].include?.mandatoryTags ?? [],
+    vehicleIncludeNations: vehicleFilter[i].include?.nations ?? [],
+    vehicleIncludeComponentFilters: vehicleFilter[i].include?.componentFilters ?? [],
 
     vehicleExcludeMinLevel: vehicleFilter[i].exclude?.minLevel ?? null,
     vehicleExcludeMaxLevel: vehicleFilter[i].exclude?.maxLevel ?? null,
     vehicleExcludeTags: vehicleFilter[i].exclude?.tags ?? [],
     vehicleExcludeMandatoryTags: vehicleFilter[i].exclude?.mandatoryTags ?? [],
+    vehicleExcludeNations: vehicleFilter[i].exclude?.nations ?? [],
+    vehicleExcludeComponentFilters: vehicleFilter[i].exclude?.componentFilters ?? []
   }))
 
   const insertValues = res.map(t => ({
