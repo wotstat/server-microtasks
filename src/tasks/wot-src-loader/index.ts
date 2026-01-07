@@ -56,7 +56,8 @@ export async function load() {
     'WOT.lootboxes_localization_mv',
     'WOT.artefacts_localization_mv',
     'WOT.game_versions_latest_mv',
-    'WOT.optional_devices_latest_mv'
+    'WOT.optional_devices_latest_mv',
+    'WOT.equipments_latest_mv'
   ]) {
     await clickhouse.exec({ query: `system refresh view ${table}` })
   }
