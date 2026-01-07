@@ -22,7 +22,7 @@ export class GetText {
 
         return {
           msgid,
-          msgstr
+          msgstr: msgstr == '?empty?' ? '' : msgstr
         }
       })
 

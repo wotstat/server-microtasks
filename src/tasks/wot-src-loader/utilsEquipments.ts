@@ -1,9 +1,11 @@
 
 export type VehicleFilter = {
-  minLevel?: string
-  maxLevel?: string
-  tags?: string
-  mandatoryTags?: string
+  vehicle?: {
+    minLevel?: string
+    maxLevel?: string
+    tags?: string
+    mandatoryTags?: string
+  }
   nations?: string
   componentFilters?: {
     [component: string]: {
@@ -42,13 +44,13 @@ export function parseVehicleFilter(filter: VehicleFilter | undefined) {
   const componentFilters = filter.componentFilters || {}
 
   return {
-    minLevel: tryParseNumber(filter.minLevel),
-    maxLevel: tryParseNumber(filter.maxLevel),
-    tags: filter.tags?.split(' ') ?? [],
-    mandatoryTags: filter.mandatoryTags?.split(' ') ?? [],
+    minLevel: tryParseNumber(filter.vehicle?.minLevel),
+    maxLevel: tryParseNumber(filter.vehicle?.maxLevel),
+    tags: filter.vehicle?.tags?.split(' ') ?? [],
+    mandatoryTags: filter.vehicle?.mandatoryTags?.split(' ') ?? [],
     nations: filter.nations?.split(' ') ?? [],
     componentFilters: Object.entries(componentFilters)
-      .map(([component, compFilter]) => Object.entries(compFilter)
+      .flatMap(([component, compFilter]) => Object.entries(compFilter)
         .map(([key, value]) => ({ component, key, value })))
   }
 }
@@ -92,6 +94,16 @@ export function parsePrice(price: Price) {
     return { price: Number(price), currency: 'credits' }
   } else {
     const currency = Object.keys(price).filter(k => k != '_')[0] || 'unknown'
-    return { price: Number(price[currency as keyof Price]), currency }
+    return { price: Number(price._), currency }
   }
+}
+
+export function processIcon(icon: string) {
+  const url = icon.split(' ').at(0) || ''
+
+  const name = url.split('/').pop() || ''
+  const parts = name.split('.')
+  if (parts.length == 1) return name
+  parts.pop()
+  return parts.join('.')
 }

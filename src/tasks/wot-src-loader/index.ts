@@ -9,6 +9,7 @@ import { load as loadCustomizations } from "./loaders/customizations";
 import { load as loadVehicles } from "./loaders/vehicles";
 import { load as loadVersion } from "./loaders/version";
 import { load as loadOptionalDevices } from "./loaders/optionalDevices";
+import { load as loadEquipments } from "./loaders/equipments";
 import { hasBranchChanges, setupGit } from '../setupGit';
 import { clickhouse } from '@/db';
 
@@ -44,6 +45,7 @@ export async function load() {
     try { await loadCustomizations(root, branch, version) } catch (error) { console.error(error) }
     try { await loadVersion(root, branch, version) } catch (error) { console.error(error) }
     try { await loadOptionalDevices(root, branch, version) } catch (error) { console.error(error) }
+    try { await loadEquipments(root, branch, version) } catch (error) { console.error(error) }
   }
 
   for (const table of [

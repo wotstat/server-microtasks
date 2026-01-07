@@ -1,71 +1,69 @@
 import { clickhouse } from "@/db";
 import { GetText } from '@/utils/GetText'
-import { lcMessagesPath, XML, type GameVersion } from "../utils"
 import { parseStringPromise } from "xml2js";
 import { KPI, parseKpi, parsePrice, parseVehicleFilter, Price, processIcon, VehicleFilter } from "../utilsEquipments";
+import { GameVersion, lcMessagesPath, XML } from "../utils";
 
-type Device = {
+type Equipment = {
   id: string
   userString?: string
+  description?: string
   shortDescriptionSpecial?: string
   longDescriptionSpecial?: string
   icon: string
-  groupName: string
   price: Price
-  tags: string
   notInShop?: 'true' | 'false'
+  tags: string
   incompatibleTags: {
     installed?: string
   }
   vehicleFilter: {
-    include?: { vehicle: VehicleFilter }
-    exclude?: { vehicle: VehicleFilter }
+    include?: VehicleFilter
+    exclude?: VehicleFilter
   }
-  archetype: string
   tooltipSection: string
   kpi: KPI
 }
 
-type DevicesList = {
-  [key: string]: Device
+type EquipmentsList = {
+  [key: string]: Equipment
 }
 
 export async function load(root: string, region: string, version: GameVersion) {
   const i18n = new GetText(await Bun.file(`${root}/${lcMessagesPath(region)}/artefacts.po`).text())
 
-  const data = await Bun.file(`${root}/sources/res/scripts/item_defs/vehicles/common/optional_devices.xml`).text()
-  const parsed = await parseStringPromise(data, { explicitArray: false }) as XML<DevicesList>
-  const devices = Object.keys(parsed.root).filter(k => k != 'xmlns:xmlref').map(key => ({ ...parsed.root[key], tag: key }))
+  const data = await Bun.file(`${root}/sources/res/scripts/item_defs/vehicles/common/equipments.xml`).text()
+  const parsed = await parseStringPromise(data, { explicitArray: false }) as XML<EquipmentsList>
+  const equipments = Object.keys(parsed.root).filter(k => k != 'xmlns:xmlref').map(key => ({ ...parsed.root[key], tag: key }))
 
-  const price = devices.map(d => parsePrice(d.price))
-  const notInShop = devices.map(d => d.notInShop === 'true')
-  const incompatibleTags = devices.map(d => d.incompatibleTags?.installed?.split(' ') || [])
-  const vehicleFilter = devices.map(d => ({
-    include: parseVehicleFilter(d.vehicleFilter?.include?.vehicle),
-    exclude: parseVehicleFilter(d.vehicleFilter?.exclude?.vehicle)
+  const price = equipments.map(e => parsePrice(e.price))
+  const notInShop = equipments.map(e => e.notInShop === 'true')
+  const incompatibleTags = equipments.map(e => e.incompatibleTags?.installed?.split(' ') || [])
+  const vehicleFilter = equipments.map(e => ({
+    include: parseVehicleFilter(e.vehicleFilter?.include),
+    exclude: parseVehicleFilter(e.vehicleFilter?.exclude)
   }))
 
-  const kpi = devices.map(d => parseKpi(d.kpi))
+  const kpi = equipments.map(e => parseKpi(e.kpi))
 
-  const res = devices.map((d, i) => ({
+  const res = equipments.map((d, i) => ({
     id: Number(d.id),
     tag: d.tag,
 
     name: !d.userString ? '' : i18n.getSingleLineTranslation(d.userString.split(':')[1], ''),
+    description: !d.description ? '' : i18n.getSingleLineTranslation(d.description.split(':')[1], ''),
     shortDescription: !d.shortDescriptionSpecial ? '' : i18n.getSingleLineTranslation(d.shortDescriptionSpecial.split(':')[1], ''),
     longDescription: !d.longDescriptionSpecial ? '' : i18n.getSingleLineTranslation(d.longDescriptionSpecial.split(':')[1], ''),
     icon: processIcon(d.icon),
-    groupName: d.groupName,
     priceAmount: price[i].price,
     priceCurrency: price[i].currency,
     tags: d.tags.split(' '),
     notInShop: notInShop[i],
     incompatibleTags: incompatibleTags[i],
-    archetype: d.archetype,
     tooltipSection: d.tooltipSection,
 
-    kpiSimple: kpi[i]!.simple,
-    kpiAggregate: kpi[i]!.aggregate,
+    kpiSimple: kpi[i]?.simple ?? [],
+    kpiAggregate: kpi[i]?.aggregate ?? [],
 
     vehicleIncludeMinLevel: vehicleFilter[i].include?.minLevel ?? null,
     vehicleIncludeMaxLevel: vehicleFilter[i].include?.maxLevel ?? null,
@@ -93,11 +91,11 @@ export async function load(root: string, region: string, version: GameVersion) {
     ...t
   }))
 
-  console.log('Inserting OptionalDevices...');
+  console.log('Inserting Equipments...');
   await clickhouse.insert({
-    table: 'WOT.OptionalDevices',
+    table: 'WOT.Equipments',
     values: insertValues,
     format: 'JSONEachRow'
   })
-  console.log(`OptionalDevices inserted for: ${region}`);
+  console.log(`Equipments inserted for: ${region}`);
 }
