@@ -18,8 +18,8 @@ type Device = {
     installed?: string
   }
   vehicleFilter: {
-    include?: { vehicle: VehicleFilter }
-    exclude?: { vehicle: VehicleFilter }
+    include?: VehicleFilter
+    exclude?: VehicleFilter
   }
   archetype: string
   tooltipSection: string
@@ -41,8 +41,8 @@ export async function load(root: string, region: string, version: GameVersion) {
   const notInShop = devices.map(d => d.notInShop === 'true')
   const incompatibleTags = devices.map(d => d.incompatibleTags?.installed?.split(' ') || [])
   const vehicleFilter = devices.map(d => ({
-    include: parseVehicleFilter(d.vehicleFilter?.include?.vehicle),
-    exclude: parseVehicleFilter(d.vehicleFilter?.exclude?.vehicle)
+    include: parseVehicleFilter(d.vehicleFilter?.include),
+    exclude: parseVehicleFilter(d.vehicleFilter?.exclude)
   }))
 
   const kpi = devices.map(d => parseKpi(d.kpi))
