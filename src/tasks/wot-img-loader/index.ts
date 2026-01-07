@@ -7,8 +7,11 @@ import { load as loadLootboxes } from "./loaders/lootboxes";
 import { load as loadShells } from "./loaders/shells";
 import { load as loadMaps } from "./loaders/maps";
 import { load as loadOptionalDevices } from "./loaders/optionalDevices";
+import { load as loadSkills } from "./loaders/skills";
 import { hasBranchChanges, setupGit } from '../setupGit';
 
+
+// const BRANCHES = ['WG']
 // const BRANCHES = ['Lesta']
 const BRANCHES = ['WG', 'Lesta']
 const root = '/data/wot-assets'
@@ -49,6 +52,7 @@ export async function load() {
     try { await loadLootboxes(root, game, version, s3Client) } catch (error) { console.error(error) }
     try { await loadVehicles(root, game, version, s3Client) } catch (error) { console.error(error) }
     try { await loadOptionalDevices(root, game, version, s3Client) } catch (error) { console.error(error) }
+    try { await loadSkills(root, game, version, s3Client) } catch (error) { console.error(error) }
   }
 
   console.log('All assets branches loaded');
