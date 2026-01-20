@@ -10,9 +10,9 @@ if (!await connect({ timeout: 10 })) {
   throw new Error('ClickHouse is not available')
 }
 
-await wotAssetsLoad()
-await wotSrcLoad()
-await forumLoader()
+// await wotAssetsLoad()
+// await wotSrcLoad()
+// await forumLoader()
 
 let isWorking = false
 schedule('0 */2 * * *', async () => {
