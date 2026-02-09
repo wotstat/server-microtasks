@@ -15,10 +15,21 @@ if (!await connect({ timeout: 10 })) {
 // await forumLoader()
 
 let isWorking = false
+let alreadyWorkingError = 0
 schedule('0 */2 * * *', async () => {
 
-  if (isWorking) return console.error('Task is already running');
+  if (isWorking) {
+    alreadyWorkingError++
+    console.error(`Task is already running (${alreadyWorkingError} times)`);
 
+    if (alreadyWorkingError > 5) {
+      console.error(`Task is already running for a long time, exiting...`);
+      process.exit(1)
+    }
+    return
+  }
+
+  alreadyWorkingError = 0
   isWorking = true
 
   await wotSrcLoad()
