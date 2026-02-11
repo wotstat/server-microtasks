@@ -34,7 +34,7 @@ export async function setupGit(root: string, url: string) {
 }
 
 export async function hasBranchChanges(branch: string) {
-  await $`git checkout ${branch}`.quiet()
+  await $`git checkout ${branch} --force`.quiet()
   await $`git fetch origin ${branch}`.quiet()
 
   return (await $`git rev-list HEAD...origin/${branch} --count`.text()).trim() !== '0';
