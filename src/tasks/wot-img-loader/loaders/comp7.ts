@@ -92,7 +92,8 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
     const assetsVersionMinor = assetsVersion.split('.').slice(0, 3).join('.')
     const contextVersionMinor = context.version.split('.').slice(0, 3).join('.')
 
-    if (assetsVersionMinor !== contextVersionMinor) return console.warn(`Assets version (${assetsVersionMinor}) and context version (${contextVersionMinor}) minor versions are different, skip loading comp7 images`)
+    if (assetsVersionMinor !== contextVersionMinor)
+      return console.warn(`Assets version (${assetsVersionMinor}) and context version (${contextVersionMinor}) minor versions are different, skip loading comp7 images`)
 
     const uploadKey = `${version}`
     if (lastWotUploadKey == uploadKey) return
