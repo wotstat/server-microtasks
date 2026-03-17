@@ -11,10 +11,11 @@ import { load as loadVersion } from "./loaders/version";
 import { load as loadOptionalDevices } from "./loaders/optionalDevices";
 import { load as loadEquipments } from "./loaders/equipments";
 import { hasBranchChanges, setupGit } from '../setupGit';
+import { contextPrepare } from '../wot-img-loader';
 import { clickhouse } from '@/db';
 
-// const BRANCHES = ['RU']
-const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA', 'CT']
+// const BRANCHES = ['EU'] as const
+const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA', 'CT'] as const
 const root = '/data/wot-src'
 
 export async function load() {
@@ -29,6 +30,8 @@ export async function load() {
     const hasChanges = await hasBranchChanges(branch)
 
     if (!hasChanges) {
+      const version = await parseGameVersion(root)
+      try { await contextPrepare(root, branch, version) } catch (error) { console.error(error) }
       console.log(`Branch '${branch}' hasnt changes, skip`)
       continue
     }
@@ -38,6 +41,8 @@ export async function load() {
     const version = await parseGameVersion(root)
 
     console.log(`Branch: ${branch}, Version: ${JSON.stringify(version)}`);
+
+    try { await contextPrepare(root, branch, version) } catch (error) { console.error(error) }
     try { await loadVehicles(root, branch, version) } catch (error) { console.error(error) }
     try { await loadArenas(root, branch, version) } catch (error) { console.error(error) }
     try { await loadLootbox(root, branch, version) } catch (error) { console.error(error) }

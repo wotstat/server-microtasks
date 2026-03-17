@@ -8,7 +8,10 @@ import { load as loadShells } from "./loaders/shells";
 import { load as loadMaps } from "./loaders/maps";
 import { load as loadOptionalDevices } from "./loaders/optionalDevices";
 import { load as loadSkills } from "./loaders/skills";
+import { contextPrepare as comp7ContextPrepare, load as loadComp7 } from './loaders/comp7';
 import { hasBranchChanges, setupGit } from '../setupGit';
+import { GameVersion } from '../wot-src-loader/utils';
+import { Region } from './utils';
 
 
 // const BRANCHES = ['WG']
@@ -22,9 +25,17 @@ const branchToGame: Record<string, 'mt' | 'wot'> = {
 }
 
 
+const ctx = {} as Record<string, Record<Region, any>>;
+function updateCtx(region: Region, key: string, data: any) {
+  if (!ctx[key]) ctx[key] = {} as Record<Region, any>;
+  ctx[key][region] = data;
+}
+
+export async function contextPrepare(root: string, region: Region, version: GameVersion) {
+  updateCtx(region, 'comp7', await comp7ContextPrepare(root, region, version));
+}
+
 const s3Client = new S3Client();
-
-
 export async function load() {
   console.log(`Loading WOT assets...`);
 
@@ -35,18 +46,19 @@ export async function load() {
     console.log(`Checkout to '${branch}'`);
     const hasChanges = await hasBranchChanges(branch)
 
+    if (hasChanges) await $`git pull --ff-only`.quiet()
+
+    const version = (await Bun.file(`${root}/.metadata_version`).text()).split(' ')[0].trim();
+    const game = branchToGame[branch];
+    try { await loadComp7(root, game, version, s3Client, hasChanges, ctx['comp7']) } catch (error) { console.error(error) }
+
     if (!hasChanges) {
       console.log(`Branch '${branch}' hasnt changes, skip`)
       continue
     }
 
-    await $`git pull --ff-only`.quiet()
-
-    const version = (await Bun.file(`${root}/.metadata_version`).text()).split(' ')[0].trim();
     console.log(`Branch ${branch} updated to ${version}`);
 
-
-    const game = branchToGame[branch];
     try { await loadMaps(root, game, version, s3Client) } catch (error) { console.error(error) }
     try { await loadShells(root, game, version, s3Client) } catch (error) { console.error(error) }
     try { await loadLootboxes(root, game, version, s3Client) } catch (error) { console.error(error) }
@@ -58,3 +70,4 @@ export async function load() {
   console.log('All assets branches loaded');
 
 }
+
