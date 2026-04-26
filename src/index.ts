@@ -3,6 +3,7 @@ import { load as wotSrcLoad } from "./tasks/wot-src-loader";
 import { load as wotAssetsLoad } from "./tasks/wot-img-loader";
 import { load as forumLoader } from "./tasks/forum-loader";
 import { schedule } from "node-cron";
+import { setup as setupApiLoader } from "./tasks/api-loader";
 
 console.log('Connecting to ClickHouse...');
 
@@ -10,8 +11,9 @@ if (!await connect({ timeout: 10 })) {
   throw new Error('ClickHouse is not available')
 }
 
-// await wotAssetsLoad()
+await setupApiLoader()
 // await wotSrcLoad()
+// await wotAssetsLoad()
 // await forumLoader()
 
 let isWorking = false
