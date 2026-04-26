@@ -40,6 +40,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   const totalPages = firstPageData.meta.pages_amount
   const lastRecalculationTs = firstPageData.meta.last_leaderboard_recalculation_ts
   const nextRecalculationTs = firstPageData.meta.next_leaderboard_recalculation_ts
+  const eliteRankPointsThreshold = firstPageData.meta.elite_rank_points_threshold
 
   const nextLoadAfter = (nextRecalculationTs * 1000) - Date.now()
   const nextLoadTime = nextLoadAfter > 0 ? new Date(Date.now() + nextLoadAfter) : new Date(Date.now() + 5000)
@@ -61,17 +62,22 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
 
   const recalculationTime = Math.round(new Date(lastRecalculationTs * 1000).getTime() / 1000)
 
-  const insertValues = allData.map(item => ({
-    region,
-    recalculationTime,
-    name: item.name,
-    bdid: item.spa_id,
-    clan: item.clan_tag,
-    clanColor: item.clan_color ? parseInt(item.clan_color.slice(1), 16) : 0,
-    rank: item.rank,
-    rating: Number.parseInt(item.p2),
-    battlesCount: Number.parseInt(item.p3),
-  }))
+  const insertValues = allData.map(item => {
+    const rating = Number.parseInt(item.p2)
+
+    return {
+      region,
+      recalculationTime,
+      name: item.name,
+      bdid: item.spa_id,
+      clan: item.clan_tag,
+      clanColor: item.clan_color ? parseInt(item.clan_color.slice(1), 16) : 0,
+      rank: item.rank,
+      rating: rating,
+      battlesCount: Number.parseInt(item.p3),
+      elite: rating >= eliteRankPointsThreshold
+    }
+  })
 
   console.log(`Inserting leaderboard data ${insertValues.length} records...`);
   await clickhouse.insert({
