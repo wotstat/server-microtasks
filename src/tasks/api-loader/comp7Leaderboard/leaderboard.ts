@@ -3,13 +3,17 @@ import { fetch } from 'bun'
 import type { LoaderResult } from '../index'
 import { clickhouse } from '@/db'
 
+const ONE_SECOND = 1000
+const ONE_MINUTE = 60 * ONE_SECOND
+const ONE_HOUR = 60 * ONE_MINUTE
+
 type Comp7LeaderboardResponse = {
   meta: {
     page_number: number
     pages_amount: number
     last_leaderboard_recalculation_ts: number
-    next_leaderboard_recalculation_ts: number
-    recalculation_interval: number
+    next_leaderboard_recalculation_ts: number | null
+    recalculation_interval: number | null
     elite_rank_points_threshold: number
     elite_rank_position_threshold: number
   }
@@ -34,7 +38,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   if (!firstPageData || !firstPageData.meta) {
     if (firstPageResponse.status !== 409) // EventDoesNotExist
       console.error('Invalid response from leaderboard API', { baseUrl, response: firstPageData });
-    return { scheduleNextLoad: new Date(Date.now() + 30000) }
+    return { scheduleNextLoad: new Date(Date.now() + ONE_MINUTE * 5) }
   }
 
   const totalPages = firstPageData.meta.pages_amount
@@ -42,8 +46,13 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   const nextRecalculationTs = firstPageData.meta.next_leaderboard_recalculation_ts
   const eliteRankPointsThreshold = firstPageData.meta.elite_rank_points_threshold
 
-  const nextLoadAfter = (nextRecalculationTs * 1000) - Date.now()
-  const nextLoadTime = nextLoadAfter > 0 ? new Date(Date.now() + nextLoadAfter) : new Date(Date.now() + 5000)
+  const nextLoadTime = (() => {
+    if (nextRecalculationTs == null) return new Date(Date.now() + ONE_MINUTE * 5)
+
+    const nextLoadAfter = (nextRecalculationTs * 1000) - Date.now()
+    if (nextLoadAfter <= 0) return new Date(Date.now() + 5 * ONE_SECOND)
+    return new Date(Date.now() + nextLoadAfter)
+  })()
 
   if (lastProcessedRecalculationTs == lastRecalculationTs) return { scheduleNextLoad: nextLoadTime }
 
@@ -52,7 +61,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   const allData = [...firstPageData.data]
 
   const loadingStartTime = Date.now()
-  console.log(`Loading leaderboard data from ${baseUrl}, total pages: ${totalPages}`);
+  console.log(`Loading leaderboard data from ${baseUrl} with recalculation timestamp ${lastRecalculationTs}, total pages: ${totalPages}`);
   for (let pageNumber = 2; pageNumber <= totalPages; pageNumber++) {
     const response = await fetch(`${baseUrl}/wgelen/wot/v1/get_leaderboard?event_id=comp7&leaderboard_id=0&page_number=${pageNumber}`)
     const data = await response.json() as Comp7LeaderboardResponse
