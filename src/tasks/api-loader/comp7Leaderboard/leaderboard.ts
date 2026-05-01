@@ -29,7 +29,8 @@ type Comp7LeaderboardResponse = {
   }[]
 }
 
-let lastProcessedRecalculationTs = 0
+let lastProcessedRecalculationTs = new Map<string, number>()
+const key = (region: string, baseUrl: string) => `${region}-${baseUrl}`
 export async function load(region: string, baseUrl: string): Promise<LoaderResult> {
 
   const firstPageResponse = await fetch(`${baseUrl}/wgelen/wot/v1/get_leaderboard?event_id=comp7&leaderboard_id=0&page_number=1`)
@@ -54,9 +55,9 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
     return new Date(Date.now() + nextLoadAfter)
   })()
 
-  if (lastProcessedRecalculationTs == lastRecalculationTs) return { scheduleNextLoad: nextLoadTime }
-
-  lastProcessedRecalculationTs = lastRecalculationTs
+  const processedKey = key(region, baseUrl)
+  if (lastProcessedRecalculationTs.get(processedKey) == lastRecalculationTs) return { scheduleNextLoad: nextLoadTime }
+  lastProcessedRecalculationTs.set(processedKey, lastRecalculationTs)
 
   const allData = [...firstPageData.data]
 
