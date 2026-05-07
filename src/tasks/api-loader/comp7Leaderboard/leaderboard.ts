@@ -97,6 +97,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   })
   console.log(`Leaderboard data inserted for ${baseUrl}`);
 
+  await clickhouse.command({ query: `system refresh view comp7_leaderboard_daily_by_rank_rmv` })
 
   return { scheduleNextLoad: nextLoadTime }
 }
