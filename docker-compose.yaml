@@ -11,6 +11,8 @@ services:
       - CLICKHOUSE_HOST=http://172.17.0.1:8123
       - CLICKHOUSE_USER
       - CLICKHOUSE_PASSWORD
+      - APPLICATION_ID_LESTA
+      - APPLICATION_ID_WG
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
       - AWS_REGION=ru-central1

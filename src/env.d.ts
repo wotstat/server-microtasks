@@ -8,5 +8,7 @@ declare module "bun" {
     readonly AWS_ACCESS_KEY_ID: string;
     readonly AWS_ENDPOINT_URL: string;
     readonly AWS_BUCKET: string;
+    readonly APPLICATION_ID_LESTA: string;
+    readonly APPLICATION_ID_WG: string;
   }
 }

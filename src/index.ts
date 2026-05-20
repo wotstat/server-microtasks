@@ -4,6 +4,7 @@ import { load as wotAssetsLoad } from "./tasks/wot-img-loader";
 import { load as forumLoader } from "./tasks/forum-loader";
 import { schedule } from "node-cron";
 import { setup as setupApiLoader } from "./tasks/api-loader";
+import { load as publicApiLoad } from "./tasks/public-api-loader";
 
 console.log('Connecting to ClickHouse...');
 
@@ -15,6 +16,7 @@ await setupApiLoader()
 // await wotSrcLoad()
 // await wotAssetsLoad()
 // await forumLoader()
+// await publicApiLoad()
 
 let isWorking = false
 let alreadyWorkingError = 0
@@ -37,6 +39,7 @@ schedule('0 */2 * * *', async () => {
   await wotSrcLoad()
   await wotAssetsLoad()
   await forumLoader()
+  await publicApiLoad()
 
   isWorking = false
 });
