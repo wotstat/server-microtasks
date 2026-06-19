@@ -48,10 +48,7 @@ async function process(path: string, size: string, season: string, upload: Retur
   const files = [...new Glob(path).scanSync()]
   for (const filePath of files) {
     const fileContent = await Bun.file(filePath).bytes()
-    const { nameWithoutExt, ext } = filenameAndExtension(filePath);
-
-    const name = nameWithoutExt
-      .replace('_logo', '')
+    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
 
     const webpBuffer = await sharp(fileContent).webp({ quality: 85, alphaQuality: 80 }).toBuffer()
     await upload(`comp7/ranks/${season}/${size}/${name}.png`, fileContent)
