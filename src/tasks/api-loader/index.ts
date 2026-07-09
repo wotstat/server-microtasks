@@ -31,13 +31,14 @@ const REGION_URLS: Record<string, string> = {
 }
 
 export async function setup() {
-  for (const [region, baseUrl] of Object.entries(REGION_URLS)) {
-    await loadTask(() => loadComp7Leaderboard(region, baseUrl), `leaderboard_${region}`)
-  }
 
   for (const [cron, task] of CRON_TASKS) {
     schedule(cron, async () => {
       for (const [region, baseUrl] of Object.entries(REGION_URLS)) { task(region, baseUrl) }
     })
+  }
+
+  for (const [region, baseUrl] of Object.entries(REGION_URLS)) {
+    await loadTask(() => loadComp7Leaderboard(region, baseUrl), `leaderboard_${region}`)
   }
 }
