@@ -1,5 +1,6 @@
 import { load as loadComp7Leaderboard } from "./comp7Leaderboard/leaderboard";
 import { load as loadGoldwagon } from "./goldwagon/loaderGoldwagon";
+import { setup as setupResourceWell } from "./resourceWell";
 import { schedule } from "node-cron";
 
 export type LoaderResult = {
@@ -31,6 +32,8 @@ const REGION_URLS: Record<string, string> = {
 }
 
 export async function setup() {
+
+  setupResourceWell()
 
   for (const [cron, task] of CRON_TASKS) {
     schedule(cron, async () => {
