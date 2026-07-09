@@ -9,22 +9,22 @@ const clickhouse = createClient({
 })
 
 async function connect(options: { timeout?: number }) {
-  const timeout = options.timeout ?? 0;
-  const delay = 0.5;
+  const timeout = options.timeout ?? 0
+  const delay = 0.5
 
   for (let i = 0; i <= timeout; i += delay) {
     try {
-      const ping = await clickhouse.query({ query: `select 1;` })
+      const ping = await clickhouse.query({ query: 'select 1;' })
       if (ping && ping.query_id) {
-        console.log('ClickHouse connected');
+        console.log('ClickHouse connected')
         return true
       }
     } catch (e: any) {
-      if (i == 0) console.log(`ClickHouse is not available: ${e?.message}, retrying...`);
+      if (i == 0) console.log(`ClickHouse is not available: ${e?.message}, retrying...`)
     }
     await new Promise(r => setTimeout(r, delay * 1000))
   }
-  return false;
+  return false
 }
 
 

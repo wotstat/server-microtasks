@@ -1,4 +1,4 @@
-declare module "bun" {
+declare module 'bun' {
   interface Env {
     readonly CLICKHOUSE_HOST: string;
     readonly CLICKHOUSE_USER: string;

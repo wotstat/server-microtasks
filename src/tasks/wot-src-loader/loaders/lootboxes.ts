@@ -1,6 +1,6 @@
-import { clickhouse } from "@/db";
+import { clickhouse } from '@/db'
 import { GetText } from '@/utils/GetText'
-import { lcMessagesPath, type GameVersion } from "../utils"
+import { lcMessagesPath, type GameVersion } from '../utils'
 
 
 export async function load(root: string, region: string, version: GameVersion) {
@@ -23,12 +23,12 @@ export async function load(root: string, region: string, version: GameVersion) {
   }))
 
 
-  console.log('Inserting lootboxes...');
+  console.log('Inserting lootboxes...')
   await clickhouse.insert({
     table: 'WOT.Lootboxes',
     values: insertValues,
     format: 'JSONEachRow'
   })
-  console.log(`Lootboxes inserted for: ${region}`);
+  console.log(`Lootboxes inserted for: ${region}`)
 
 }

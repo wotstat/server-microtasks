@@ -1,8 +1,8 @@
-import { clickhouse } from "@/db"
-import { GetText } from "@/utils/GetText"
+import { clickhouse } from '@/db'
+import { GetText } from '@/utils/GetText'
 import { parseStringPromise } from 'xml2js'
-import { lcMessagesPath, type GameVersion } from "../utils"
-import { Glob } from "bun";
+import { lcMessagesPath, type GameVersion } from '../utils'
+import { Glob } from 'bun'
 
 type XML<T> = {
   root: T
@@ -64,7 +64,7 @@ function getRoleFromTags(tags: string[]) {
 async function process(root: string, region: string) {
 
   i18nCache.clear()
-  const glob = new Glob(`${root}/sources/res/scripts/item_defs/vehicles/*/list.xml`);
+  const glob = new Glob(`${root}/sources/res/scripts/item_defs/vehicles/*/list.xml`)
 
   const result: {
     tag: string,
@@ -120,12 +120,12 @@ export async function load(root: string, region: string, version: GameVersion) {
   }))
 
 
-  console.log('Inserting vehicles...');
+  console.log('Inserting vehicles...')
   await clickhouse.insert({
     table: 'WOT.Vehicles',
     values: insertValues,
     format: 'JSONEachRow'
   })
-  console.log(`Vehicles inserted for: ${region}`);
+  console.log(`Vehicles inserted for: ${region}`)
 
 }

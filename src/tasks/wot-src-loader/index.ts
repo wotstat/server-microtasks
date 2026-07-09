@@ -1,18 +1,18 @@
 
 import { $ } from 'bun'
-import { parseGameVersion } from './utils';
+import { parseGameVersion } from './utils'
 
-import { load as loadArenas } from "./loaders/arenas";
-import { load as loadLootbox } from "./loaders/lootboxes";
-import { load as loadArtefacts } from "./loaders/artefacts";
-import { load as loadCustomizations } from "./loaders/customizations";
-import { load as loadVehicles } from "./loaders/vehicles";
-import { load as loadVersion } from "./loaders/version";
-import { load as loadOptionalDevices } from "./loaders/optionalDevices";
-import { load as loadEquipments } from "./loaders/equipments";
-import { hasBranchChanges, setupGit } from '../setupGit';
-import { contextPrepare } from '../wot-img-loader';
-import { clickhouse } from '@/db';
+import { load as loadArenas } from './loaders/arenas'
+import { load as loadLootbox } from './loaders/lootboxes'
+import { load as loadArtefacts } from './loaders/artefacts'
+import { load as loadCustomizations } from './loaders/customizations'
+import { load as loadVehicles } from './loaders/vehicles'
+import { load as loadVersion } from './loaders/version'
+import { load as loadOptionalDevices } from './loaders/optionalDevices'
+import { load as loadEquipments } from './loaders/equipments'
+import { hasBranchChanges, setupGit } from '../setupGit'
+import { contextPrepare } from '../wot-img-loader'
+import { clickhouse } from '@/db'
 
 // const BRANCHES = ['EU'] as const
 const BRANCHES = ['EU', 'NA', 'RU', 'PT_RU', 'CN', 'ASIA', 'CT'] as const
@@ -20,13 +20,13 @@ const root = '/data/wot-src'
 
 export async function load() {
 
-  console.log(`Loading WOT src...`);
+  console.log('Loading WOT src...')
 
   await setupGit(root, 'https://github.com/IzeBerg/wot-src.git')
   $.cwd(root)
 
   for (const branch of BRANCHES) {
-    console.log(`Checkout to '${branch}'`);
+    console.log(`Checkout to '${branch}'`)
     const hasChanges = await hasBranchChanges(branch)
 
     if (!hasChanges) {
@@ -40,7 +40,7 @@ export async function load() {
 
     const version = await parseGameVersion(root)
 
-    console.log(`Branch: ${branch}, Version: ${JSON.stringify(version)}`);
+    console.log(`Branch: ${branch}, Version: ${JSON.stringify(version)}`)
 
     try { await contextPrepare(root, branch, version) } catch (error) { console.error(error) }
     try { await loadVehicles(root, branch, version) } catch (error) { console.error(error) }
@@ -67,6 +67,6 @@ export async function load() {
     await clickhouse.exec({ query: `system refresh view ${table}` })
   }
 
-  console.log('All src branches loaded');
+  console.log('All src branches loaded')
 
 }

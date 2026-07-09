@@ -1,8 +1,8 @@
-import { clickhouse } from "@/db";
+import { clickhouse } from '@/db'
 import { GetText } from '@/utils/GetText'
-import { lcMessagesPath, XML, type GameVersion } from "../utils"
-import { parseStringPromise } from "xml2js";
-import { KPI, parseKpi, parsePrice, parseVehicleFilter, Price, processIcon, VehicleFilter } from "../utilsEquipments";
+import { lcMessagesPath, XML, type GameVersion } from '../utils'
+import { parseStringPromise } from 'xml2js'
+import { KPI, parseKpi, parsePrice, parseVehicleFilter, Price, processIcon, VehicleFilter } from '../utilsEquipments'
 
 type Device = {
   id: string
@@ -93,11 +93,11 @@ export async function load(root: string, region: string, version: GameVersion) {
     ...t
   }))
 
-  console.log('Inserting OptionalDevices...');
+  console.log('Inserting OptionalDevices...')
   await clickhouse.insert({
     table: 'WOT.OptionalDevices',
     values: insertValues,
     format: 'JSONEachRow'
   })
-  console.log(`OptionalDevices inserted for: ${region}`);
+  console.log(`OptionalDevices inserted for: ${region}`)
 }

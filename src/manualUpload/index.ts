@@ -1,9 +1,9 @@
 
-import { uploader } from "../utils/assetsUploader";
-import { S3Client } from "@aws-sdk/client-s3";
-import sharp from "sharp";
+import { uploader } from '../utils/assetsUploader'
+import { S3Client } from '@aws-sdk/client-s3'
+import sharp from 'sharp'
 
-const s3Client = new S3Client();
+const s3Client = new S3Client()
 
 const upload = uploader('mt', '1.28.0.0', s3Client)
 const name = 'ny_2026_surprise'

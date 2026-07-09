@@ -1,7 +1,7 @@
-import { load as loadComp7Leaderboard } from "./comp7Leaderboard/leaderboard";
-import { load as loadGoldwagon } from "./goldwagon/loaderGoldwagon";
-import { setup as setupResourceWell } from "./resourceWell";
-import { schedule } from "node-cron";
+import { load as loadComp7Leaderboard } from './comp7Leaderboard/leaderboard'
+import { load as loadGoldwagon } from './goldwagon/loaderGoldwagon'
+import { setup as setupResourceWell } from './resourceWell'
+import { schedule } from 'node-cron'
 
 export type LoaderResult = {
   scheduleNextLoad: Date;
@@ -12,7 +12,7 @@ async function loadTask(loader: () => Promise<LoaderResult>, name: string) {
     const result = await loader()
     setTimeout(() => loadTask(loader, name), result.scheduleNextLoad.getTime() - Date.now())
   } catch (error) {
-    console.error(`Error loading ${name}:`, error);
+    console.error(`Error loading ${name}:`, error)
     setTimeout(() => loadTask(loader, name), 30000)
   }
 }

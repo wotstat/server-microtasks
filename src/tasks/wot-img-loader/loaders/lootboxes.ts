@@ -1,8 +1,8 @@
-import { Glob } from "bun"
-import { S3Client } from "@aws-sdk/client-s3";
+import { Glob } from 'bun'
+import { S3Client } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
 import { uploader } from '../../../utils/assetsUploader'
-import { filenameAndExtension } from "../utils";
+import { filenameAndExtension } from '../utils'
 
 
 export async function load(root: string, game: 'mt' | 'wot', version: string, bucket: S3Client) {
@@ -15,7 +15,7 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
     const fileContent = await Bun.file(filePath).bytes()
 
 
-    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
+    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
 
     const webpBuffer = await sharp(fileContent).webp({ quality: 80, alphaQuality: 50 }).toBuffer()
     await upload(`lootboxes/small/${name}.png`, fileContent)

@@ -1,14 +1,14 @@
-import { Glob } from "bun"
-import { S3Client } from "@aws-sdk/client-s3";
+import { Glob } from 'bun'
+import { S3Client } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
-import { uploader } from "../../../utils/assetsUploader";
-import { filenameAndExtension } from "../utils";
-import { clickhouse } from "@/db";
+import { uploader } from '../../../utils/assetsUploader'
+import { filenameAndExtension } from '../utils'
+import { clickhouse } from '@/db'
 
 
 export async function load(root: string, game: 'mt' | 'wot', version: string, bucket: S3Client) {
 
-  console.log('Loading optionalDevices...');
+  console.log('Loading optionalDevices...')
 
   const region = game === 'mt' ? 'RU' : 'EU'
 
@@ -26,8 +26,8 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
   for (const size of sizes) {
     const files = [...new Glob(`${root}/gui/maps/shop/artefacts/${size.size}/*.png`).scanSync()]
     for (const filePath of files) {
-      const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
-      if (!icons.has(name)) continue;
+      const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
+      if (!icons.has(name)) continue
 
       const fileContent = await Bun.file(filePath).bytes()
 
@@ -39,8 +39,8 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
 
   const small = [...new Glob(`${root}/gui/maps/icons/artefact/*.png`).scanSync()]
   for (const filePath of small) {
-    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
-    if (!icons.has(name)) continue;
+    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
+    if (!icons.has(name)) continue
 
     const fileContent = await Bun.file(filePath).bytes()
 

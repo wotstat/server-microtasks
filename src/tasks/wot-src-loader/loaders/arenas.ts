@@ -1,7 +1,7 @@
-import { clickhouse } from "@/db"
+import { clickhouse } from '@/db'
 import { GetText } from '@/utils/GetText'
 import { parseStringPromise } from 'xml2js'
-import { lcMessagesPath, type GameVersion } from "../utils"
+import { lcMessagesPath, type GameVersion } from '../utils'
 
 type XML<T> = {
   root: T
@@ -209,11 +209,11 @@ export async function load(root: string, region: string, version: GameVersion) {
   }))
 
 
-  console.log('Inserting arenas...');
+  console.log('Inserting arenas...')
   await clickhouse.insert({
     table: 'WOT.Arenas',
     values: insertValues,
     format: 'JSONEachRow'
   })
-  console.log(`Arena inserted for: ${region}`);
+  console.log(`Arena inserted for: ${region}`)
 }

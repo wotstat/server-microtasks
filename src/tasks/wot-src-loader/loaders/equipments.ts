@@ -1,8 +1,8 @@
-import { clickhouse } from "@/db";
+import { clickhouse } from '@/db'
 import { GetText } from '@/utils/GetText'
-import { parseStringPromise } from "xml2js";
-import { KPI, parseKpi, parsePrice, parseVehicleFilter, Price, processIcon, VehicleFilter } from "../utilsEquipments";
-import { GameVersion, lcMessagesPath, XML } from "../utils";
+import { parseStringPromise } from 'xml2js'
+import { KPI, parseKpi, parsePrice, parseVehicleFilter, Price, processIcon, VehicleFilter } from '../utilsEquipments'
+import { GameVersion, lcMessagesPath, XML } from '../utils'
 
 type Equipment = {
   id: string
@@ -91,11 +91,11 @@ export async function load(root: string, region: string, version: GameVersion) {
     ...t
   }))
 
-  console.log('Inserting Equipments...');
+  console.log('Inserting Equipments...')
   await clickhouse.insert({
     table: 'WOT.Equipments',
     values: insertValues,
     format: 'JSONEachRow'
   })
-  console.log(`Equipments inserted for: ${region}`);
+  console.log(`Equipments inserted for: ${region}`)
 }

@@ -1,4 +1,4 @@
-import { parseStringPromise } from 'xml2js';
+import { parseStringPromise } from 'xml2js'
 
 export type GameVersion = {
   full: string
@@ -27,8 +27,8 @@ export async function parseGameVersion(root: string): Promise<GameVersion> {
 }
 
 export function lcMessagesPath(branch: string) {
-  if (branch == 'PT_RU' || branch == 'RU') return `sources/res/text/ru/lc_messages`
-  return `sources/res/text/lc_messages`
+  if (branch == 'PT_RU' || branch == 'RU') return 'sources/res/text/ru/lc_messages'
+  return 'sources/res/text/lc_messages'
 }
 
 export type XML<T> = {

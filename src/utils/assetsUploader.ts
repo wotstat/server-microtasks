@@ -1,4 +1,4 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 
 const defaultConfig = {
   Bucket: Bun.env.AWS_BUCKET,
@@ -7,19 +7,19 @@ const defaultConfig = {
 } as const
 
 function contentTypeGenerate(path: string) {
-  const ext = path.split('.').pop()?.toLowerCase();
+  const ext = path.split('.').pop()?.toLowerCase()
 
-  if (ext === 'png') return 'image/png';
-  if (ext === 'webp') return 'image/webp';
-  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg';
-  if (ext === 'gif') return 'image/gif';
-  return 'application/octet-stream';
+  if (ext === 'png') return 'image/png'
+  if (ext === 'webp') return 'image/webp'
+  if (ext === 'jpg' || ext === 'jpeg') return 'image/jpeg'
+  if (ext === 'gif') return 'image/gif'
+  return 'application/octet-stream'
 }
 
 export function uploader(game: 'mt' | 'wot', version: string, bucket: S3Client) {
   return async (path: string, content: PutObjectCommand['input']['Body']) => {
 
-    const contentType = contentTypeGenerate(path);
+    const contentType = contentTypeGenerate(path)
 
     await bucket.send(new PutObjectCommand({
       ...defaultConfig,

@@ -1,10 +1,10 @@
-import { GameVersion } from "@/tasks/wot-src-loader/utils"
-import { S3Client } from "@aws-sdk/client-s3";
-import { Ctx, filenameAndExtension } from "../utils";
-import { Glob } from "bun";
-import { clickhouse } from "@/db"
-import { uploader } from "@/utils/assetsUploader";
-import sharp from "sharp";
+import { GameVersion } from '@/tasks/wot-src-loader/utils'
+import { S3Client } from '@aws-sdk/client-s3'
+import { Ctx, filenameAndExtension } from '../utils'
+import { Glob } from 'bun'
+import { clickhouse } from '@/db'
+import { uploader } from '@/utils/assetsUploader'
+import sharp from 'sharp'
 
 
 type Context = {
@@ -48,7 +48,7 @@ async function process(path: string, size: string, season: string, upload: Retur
   const files = [...new Glob(path).scanSync()]
   for (const filePath of files) {
     const fileContent = await Bun.file(filePath).bytes()
-    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
+    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
 
     const webpBuffer = await sharp(fileContent).webp({ quality: 85, alphaQuality: 80 }).toBuffer()
     await upload(`comp7/ranks/${season}/${size}/${name}.png`, fileContent)
@@ -84,7 +84,7 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
 
   } else {
     const context = ctx['EU']
-    if (!context || !context.season || !context.seasonsInYear) return console.warn(`Context for EU region is not valid, skip loading comp7 images`)
+    if (!context || !context.season || !context.seasonsInYear) return console.warn('Context for EU region is not valid, skip loading comp7 images')
 
     const assetsVersionMinor = assetsVersion.split('.').slice(0, 3).join('.')
     const contextVersionMinor = context.version.split('.').slice(0, 3).join('.')

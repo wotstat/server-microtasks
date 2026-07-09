@@ -38,7 +38,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
 
   if (!firstPageData || !firstPageData.meta) {
     if (firstPageResponse.status !== 409) // EventDoesNotExist
-      console.error('Invalid response from leaderboard API', { baseUrl, response: firstPageData });
+      console.error('Invalid response from leaderboard API', { baseUrl, response: firstPageData })
     return { scheduleNextLoad: new Date(Date.now() + ONE_MINUTE * 5) }
   }
 
@@ -62,13 +62,13 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   const allData = [...firstPageData.data]
 
   const loadingStartTime = Date.now()
-  console.log(`Loading leaderboard data from ${baseUrl} with recalculation timestamp ${lastRecalculationTs}, total pages: ${totalPages}`);
+  console.log(`Loading leaderboard data from ${baseUrl} with recalculation timestamp ${lastRecalculationTs}, total pages: ${totalPages}`)
   for (let pageNumber = 2; pageNumber <= totalPages; pageNumber++) {
     const response = await fetch(`${baseUrl}/wgelen/wot/v1/get_leaderboard?event_id=comp7&leaderboard_id=0&page_number=${pageNumber}`)
     const data = await response.json() as Comp7LeaderboardResponse
     allData.push(...data.data)
   }
-  console.log(`Loaded ${totalPages} pages in ${(Date.now() - loadingStartTime) / 1000} seconds, total records: ${allData.length}`);
+  console.log(`Loaded ${totalPages} pages in ${(Date.now() - loadingStartTime) / 1000} seconds, total records: ${allData.length}`)
 
   const recalculationTime = Math.round(new Date(lastRecalculationTs * 1000).getTime() / 1000)
 
@@ -89,15 +89,15 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
     }
   })
 
-  console.log(`Inserting leaderboard data ${insertValues.length} records...`);
+  console.log(`Inserting leaderboard data ${insertValues.length} records...`)
   await clickhouse.insert({
     table: 'WOT.Comp7Leaderboard',
     values: insertValues,
     format: 'JSONEachRow'
   })
-  console.log(`Leaderboard data inserted for ${baseUrl}`);
+  console.log(`Leaderboard data inserted for ${baseUrl}`)
 
-  await clickhouse.command({ query: `system refresh view WOT.comp7_leaderboard_daily_by_rank_rmv` })
+  await clickhouse.command({ query: 'system refresh view WOT.comp7_leaderboard_daily_by_rank_rmv' })
 
   return { scheduleNextLoad: nextLoadTime }
 }

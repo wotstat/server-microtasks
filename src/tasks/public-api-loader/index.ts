@@ -1,4 +1,4 @@
-import { load as moeAndMasteryLoad } from "./loaders/moeAndMastery";
+import { load as moeAndMasteryLoad } from './loaders/moeAndMastery'
 
 const APPLICATION_ID_LESTA = Bun.env.APPLICATION_ID_LESTA
 const APPLICATION_ID_WG = Bun.env.APPLICATION_ID_WG
@@ -20,7 +20,7 @@ export async function load() {
     try {
       await moeAndMasteryLoad(region.name, region.appId, region.url)
     } catch (error) {
-      console.error(`Error loading moe and mastery info for region ${region.name}:`, error);
+      console.error(`Error loading moe and mastery info for region ${region.name}:`, error)
     }
   }
 }

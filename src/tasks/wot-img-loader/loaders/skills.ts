@@ -1,8 +1,8 @@
-import { Glob } from "bun"
-import { S3Client } from "@aws-sdk/client-s3";
+import { Glob } from 'bun'
+import { S3Client } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
-import { uploader } from "../../../utils/assetsUploader";
-import { filenameAndExtension } from "../utils";
+import { uploader } from '../../../utils/assetsUploader'
+import { filenameAndExtension } from '../utils'
 
 function intersect<T>(...sets: Set<T>[]): Set<T> {
   if (sets.length === 0) return new Set<T>()
@@ -30,8 +30,8 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
   )
 
   for (const filePath of extraLarge) {
-    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
-    if (!intersectedNames.has(name)) continue;
+    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
+    if (!intersectedNames.has(name)) continue
 
     const fileContent = await Bun.file(filePath).bytes()
     const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
@@ -40,8 +40,8 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
   }
 
   for (const filePath of big) {
-    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath);
-    if (!intersectedNames.has(name)) continue;
+    const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
+    if (!intersectedNames.has(name)) continue
 
     const fileContent = await Bun.file(filePath).bytes()
     const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()

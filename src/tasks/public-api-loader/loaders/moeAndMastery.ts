@@ -1,4 +1,4 @@
-import { clickhouse } from "@/db"
+import { clickhouse } from '@/db'
 
 const MOE_URL = 'wot/tanks/mastery/'
 const VEHICLE_URL = 'wot/encyclopedia/vehicles/'
@@ -28,7 +28,7 @@ type MasteryResponse = Response<{
 }>
 
 function tagProcessor(tag: string) {
-  const prefix = tag.split('_')[0].match(/([a-zA-Z]*)\d*/)?.[1];
+  const prefix = tag.split('_')[0].match(/([a-zA-Z]*)\d*/)?.[1]
 
   const prefixToNation = {
     'F': 'france',
@@ -51,8 +51,8 @@ function tagProcessor(tag: string) {
   return `${nation}:${tag}`
 }
 
-let lastMoeUpdated = {} as Record<string, number>;
-let lastMasteriesUpdated = {} as Record<string, number>;
+let lastMoeUpdated = {} as Record<string, number>
+let lastMasteriesUpdated = {} as Record<string, number>
 
 async function loadMoe(region: string, appId: string, url: string, vehiclesMap: Map<number, string>) {
 
@@ -65,14 +65,14 @@ async function loadMoe(region: string, appId: string, url: string, vehiclesMap: 
     })
   })
 
-  const data = await res.json() as MoeResponse;
+  const data = await res.json() as MoeResponse
 
   if (data.data.updated_at == lastMoeUpdated[region]) return
 
   const moeResult = new Map<string, { [percentile in typeof MOE_PERCENTILES[number]]: number }>()
 
   for (const element of Object.entries(data.data.distribution)) {
-    const [key, value] = element;
+    const [key, value] = element
     const tag = vehiclesMap.get(Number(key))
     if (!tag) continue
     const processed = tagProcessor(tag)
@@ -80,7 +80,7 @@ async function loadMoe(region: string, appId: string, url: string, vehiclesMap: 
       console.warn(`Unknown tag format: ${tag}`)
       continue
     }
-    moeResult.set(processed, value);
+    moeResult.set(processed, value)
   }
 
   const insertValues = Array.from(moeResult.entries()).map(([tag, distribution]) => ({
@@ -98,7 +98,7 @@ async function loadMoe(region: string, appId: string, url: string, vehiclesMap: 
     p100: distribution['100']
   }))
 
-  console.log(`Inserting moe info [${insertValues.length}] for region ${region}...`);
+  console.log(`Inserting moe info [${insertValues.length}] for region ${region}...`)
 
   await clickhouse.insert({
     table: 'WOT.MoeInfo',
@@ -106,19 +106,19 @@ async function loadMoe(region: string, appId: string, url: string, vehiclesMap: 
     format: 'JSONEachRow'
   })
 
-  console.log(`Moe info inserted for region ${region}`);
+  console.log(`Moe info inserted for region ${region}`)
 
 
-  lastMoeUpdated[region] = data.data.updated_at;
+  lastMoeUpdated[region] = data.data.updated_at
 }
 
 async function loadMastery(region: string, appId: string, url: string, vehiclesMap: Map<number, string>) {
 
-  let updated = 0;
+  let updated = 0
   const masteriesResult = new Map<string, Record<string, number>>()
 
   for (let i = 1; i <= 100; i += 10) {
-    const percentiles = Array.from({ length: 10 }, (_, j) => (i + j).toString()).filter(p => Number(p) <= 100);
+    const percentiles = Array.from({ length: 10 }, (_, j) => (i + j).toString()).filter(p => Number(p) <= 100)
 
     const res = await fetch(`${url}/${MOE_URL}`, {
       method: 'POST',
@@ -129,7 +129,7 @@ async function loadMastery(region: string, appId: string, url: string, vehiclesM
       })
     })
 
-    const data = await res.json() as MasteryResponse;
+    const data = await res.json() as MasteryResponse
 
     if (data.data.updated_at == lastMasteriesUpdated[region]) return
 
@@ -149,7 +149,7 @@ async function loadMastery(region: string, appId: string, url: string, vehiclesM
         record[percentile] = count
     }
 
-    updated = data.data.updated_at;
+    updated = data.data.updated_at
   }
 
   const insertValues = Array.from(masteriesResult.entries()).map(([tag, distribution]) => ({
@@ -160,7 +160,7 @@ async function loadMastery(region: string, appId: string, url: string, vehiclesM
     ...Object.fromEntries(Object.entries(distribution).map(([k, v]) => [`p${k}`, v]))
   }))
 
-  console.log(`Inserting mastery info [${insertValues.length}] for region ${region}...`);
+  console.log(`Inserting mastery info [${insertValues.length}] for region ${region}...`)
 
   await clickhouse.insert({
     table: 'WOT.MasteryInfo',
@@ -168,9 +168,9 @@ async function loadMastery(region: string, appId: string, url: string, vehiclesM
     format: 'JSONEachRow'
   })
 
-  console.log(`Mastery info inserted for region ${region}`);
+  console.log(`Mastery info inserted for region ${region}`)
 
-  lastMasteriesUpdated[region] = updated;
+  lastMasteriesUpdated[region] = updated
 }
 
 
@@ -184,10 +184,10 @@ export async function load(region: string, appId: string, url: string) {
     })
   })
 
-  const vehiclesData = await vehicles.json() as VehicleResponse;
+  const vehiclesData = await vehicles.json() as VehicleResponse
   const vehiclesMap = new Map<number, string>(Object.entries(vehiclesData.data).map(([id, { tag }]) => [Number(id), tag]))
 
-  await loadMoe(region, appId, url, vehiclesMap);
-  await loadMastery(region, appId, url, vehiclesMap);
+  await loadMoe(region, appId, url, vehiclesMap)
+  await loadMastery(region, appId, url, vehiclesMap)
 
 }

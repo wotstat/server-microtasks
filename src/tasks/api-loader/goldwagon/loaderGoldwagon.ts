@@ -1,5 +1,5 @@
-import { clickhouse } from "@/db";
-import { LoaderResult } from "..";
+import { clickhouse } from '@/db'
+import { LoaderResult } from '..'
 
 const ONE_SECOND = 1000
 const ONE_MINUTE = 60 * ONE_SECOND
@@ -19,7 +19,7 @@ export async function load(region: string, baseUrl: string) {
   if (!balance.ok) {
     const balanceText = await balance.text()
     if (!balanceText.includes('event_expired'))
-      console.error(`Error loading goldwagon balance for region ${region}:`, balanceText);
+      console.error(`Error loading goldwagon balance for region ${region}:`, balanceText)
 
     skipUntilByRegion.set(region, Date.now() + ONE_MINUTE)
     return
@@ -29,7 +29,7 @@ export async function load(region: string, baseUrl: string) {
 
   if ('error' in balanceData) {
     if (!balanceData.error.includes('event_expired'))
-      console.error(`Error loading goldwagon balance for region ${region}:`, balanceData.error);
+      console.error(`Error loading goldwagon balance for region ${region}:`, balanceData.error)
 
     skipUntilByRegion.set(region, Date.now() + ONE_MINUTE)
     return

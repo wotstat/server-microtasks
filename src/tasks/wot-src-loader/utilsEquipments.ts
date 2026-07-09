@@ -32,14 +32,14 @@ export type KPI = {
 
 export function tryParseNumber(value: string | undefined): number | null {
   if (value === undefined) {
-    return null;
+    return null
   }
-  const parsed = Number(value);
-  return isNaN(parsed) ? null : parsed;
+  const parsed = Number(value)
+  return isNaN(parsed) ? null : parsed
 }
 
 export function parseVehicleFilter(filter: VehicleFilter | undefined) {
-  if (!filter) return null;
+  if (!filter) return null
 
   const componentFilters = filter.componentFilters || {}
 
@@ -56,11 +56,11 @@ export function parseVehicleFilter(filter: VehicleFilter | undefined) {
 }
 
 export function parseKpi(kpi: KPI) {
-  if (!kpi) return null;
+  if (!kpi) return null
 
   function toArray<T>(kpiPart: T | T[] | undefined): T[] {
-    if (!kpiPart) return [];
-    return Array.isArray(kpiPart) ? kpiPart : [kpiPart];
+    if (!kpiPart) return []
+    return Array.isArray(kpiPart) ? kpiPart : [kpiPart]
   }
 
   const mul = toArray(kpi.mul).map(k => ({ name: k.name, type: 'mul', value: Number(k.value) }))
