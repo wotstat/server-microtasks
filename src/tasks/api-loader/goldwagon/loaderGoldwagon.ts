@@ -18,8 +18,11 @@ export async function load(region: string, baseUrl: string) {
 
   if (!balance.ok) {
     const balanceText = await balance.text()
-    if (!balanceText.includes('event_expired'))
-      console.error(`Error loading goldwagon balance for region ${region}:`, balanceText)
+    const skipLog =
+      balanceText.includes('event_expired') ||
+      balanceText.includes('event_not_started')
+
+    if (!skipLog) console.error(`Error loading goldwagon balance for region ${region}:`, balanceText)
 
     skipUntilByRegion.set(region, Date.now() + ONE_MINUTE)
     return
@@ -28,8 +31,11 @@ export async function load(region: string, baseUrl: string) {
   const balanceData = await balance.json() as { balance: number } | { error: string }
 
   if ('error' in balanceData) {
-    if (!balanceData.error.includes('event_expired'))
-      console.error(`Error loading goldwagon balance for region ${region}:`, balanceData.error)
+    const skipLog =
+      balanceData.error.includes('event_expired') ||
+      balanceData.error.includes('event_not_started')
+
+    if (!skipLog) console.error(`Error loading goldwagon balance for region ${region}:`, balanceData.error)
 
     skipUntilByRegion.set(region, Date.now() + ONE_MINUTE)
     return
