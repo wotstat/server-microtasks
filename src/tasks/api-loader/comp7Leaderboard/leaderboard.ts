@@ -98,6 +98,8 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   console.log(`Leaderboard data inserted for ${baseUrl}`)
 
   await clickhouse.command({ query: 'system refresh view WOT.comp7_leaderboard_daily_by_rank_rmv' })
+  await clickhouse.command({ query: 'system wait view WOT.comp7_leaderboard_daily_by_rank_rmv' })
+  await clickhouse.command({ query: 'system reload dictionary WOT.Comp7LatestRatingDictionary' })
 
   return { scheduleNextLoad: nextLoadTime }
 }
