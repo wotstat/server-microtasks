@@ -66,8 +66,8 @@ async function processRoleSkills(path: string, season: string, upload: ReturnTyp
     const webpBuffer = await sharp(fileContent).webp({ quality: 85, alphaQuality: 80 }).toBuffer()
     await upload(`comp7/skills/${season}/${name}.png`, fileContent)
     await upload(`comp7/skills/${season}/${name}.webp`, webpBuffer)
-    await upload(`comp7/ranks/latest/${name}.png`, fileContent)
-    await upload(`comp7/ranks/latest/${name}.webp`, webpBuffer)
+    await upload(`comp7/skills/latest/${name}.png`, fileContent)
+    await upload(`comp7/skills/latest/${name}.webp`, webpBuffer)
   }
 }
 

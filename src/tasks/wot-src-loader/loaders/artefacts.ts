@@ -6,6 +6,9 @@ import { lcMessagesPath, type GameVersion } from '../utils'
 export async function load(root: string, region: string, version: GameVersion) {
   const i18n = new GetText(await Bun.file(`${root}/${lcMessagesPath(region)}/artefacts.po`).text())
 
+  const extendFile = Bun.file(`${root}/${lcMessagesPath(region)}/comp7.artefacts.extend.po`)
+  if (await extendFile.exists()) i18n.extend(await extendFile.text())
+
   const artefacts =
     Array.from(i18n.getAll().entries())
       .filter(t => t[0].includes('/name'))
