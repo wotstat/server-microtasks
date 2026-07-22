@@ -27,8 +27,8 @@ type Comp7LeaderboardResponse = {
     p2: string
     p3: string
     name: string
-    clan_tag: string
-    clan_color: string
+    clan_tag: string | null
+    clan_color: string | null
   }[]
 }
 
@@ -123,7 +123,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
       recalculationTime,
       name: item.name,
       bdid: item.spa_id,
-      clan: item.clan_tag,
+      clan: item.clan_tag ?? '',
       clanColor: item.clan_color ? parseInt(item.clan_color.slice(1), 16) : 0,
       rank: item.rank,
       rating: rating,
