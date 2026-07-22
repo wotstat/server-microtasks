@@ -77,7 +77,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   const totalPages = firstPageData.meta.pages_amount
   const lastRecalculationTs = firstPageData.meta.last_leaderboard_recalculation_ts
   const nextRecalculationTs = firstPageData.meta.next_leaderboard_recalculation_ts
-  const eliteRankPointsThreshold = firstPageData.meta.elite_rank_points_threshold
+  const eliteRankPositionThreshold = firstPageData.meta.elite_rank_position_threshold
 
   const nextLoadTime = (() => {
     if (nextRecalculationTs == null) return new Date(Date.now() + ONE_MINUTE * 5)
@@ -128,7 +128,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
       rank: item.rank,
       rating: rating,
       battlesCount: Number.parseInt(item.p3),
-      elite: rating >= eliteRankPointsThreshold
+      elite: item.rank <= eliteRankPositionThreshold
     }
   })
 
