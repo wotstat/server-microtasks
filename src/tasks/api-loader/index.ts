@@ -1,7 +1,6 @@
 import { load as loadComp7Leaderboard } from './comp7Leaderboard/leaderboard'
 import { load as loadGoldwagon } from './goldwagon/loaderGoldwagon'
 import { setup as setupResourceWell } from './resourceWell'
-import { schedule } from 'node-cron'
 
 export type LoaderResult = {
   scheduleNextLoad: Date;
@@ -17,8 +16,8 @@ async function loadTask(loader: () => Promise<LoaderResult>, name: string) {
   }
 }
 
-const CRON_TASKS: [string, (region: string, baseUrl: string) => void][] = [
-  ['* * * * * *', (region, baseUrl) => loadGoldwagon(region, baseUrl)],
+const INTERVAL_TASKS: [number, (region: string, baseUrl: string) => Promise<void>][] = [
+  [1000, loadGoldwagon],
 ]
 
 const REGION_URLS: Record<string, string> = {
@@ -35,10 +34,14 @@ export async function setup() {
 
   setupResourceWell()
 
-  for (const [cron, task] of CRON_TASKS) {
-    schedule(cron, async () => {
-      for (const [region, baseUrl] of Object.entries(REGION_URLS)) { task(region, baseUrl) }
-    })
+  for (const [interval, task] of INTERVAL_TASKS) {
+    setInterval(() => {
+      for (const [region, baseUrl] of Object.entries(REGION_URLS)) {
+        void task(region, baseUrl).catch(error => {
+          console.error(`Error running interval task for ${region}:`, error)
+        })
+      }
+    }, interval)
   }
 
   for (const [region, baseUrl] of Object.entries(REGION_URLS)) {

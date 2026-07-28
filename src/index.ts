@@ -2,7 +2,6 @@ import { connect } from './db'
 import { load as wotSrcLoad } from './tasks/wot-src-loader'
 import { load as wotAssetsLoad } from './tasks/wot-img-loader'
 import { load as forumLoader } from './tasks/forum-loader'
-import { schedule } from 'node-cron'
 import { setup as setupApiLoader } from './tasks/api-loader'
 import { load as publicApiLoad } from './tasks/public-api-loader'
 
@@ -18,28 +17,20 @@ await setupApiLoader()
 // await forumLoader()
 // await publicApiLoad()
 
-let isWorking = false
-let alreadyWorkingError = 0
-schedule('0 */2 * * *', async () => {
+const TASK_TIMEOUT = 12 * 60 * 60 * 1000
 
-  if (isWorking) {
-    alreadyWorkingError++
-    console.error(`Task is already running (${alreadyWorkingError} times)`)
+Bun.cron('0 */2 * * *', async () => {
+  const timeout = setTimeout(() => {
+    console.error('Task is already running for a long time, exiting...')
+    process.exit(1)
+  }, TASK_TIMEOUT)
 
-    if (alreadyWorkingError > 5) {
-      console.error('Task is already running for a long time, exiting...')
-      process.exit(1)
-    }
-    return
+  try {
+    await wotSrcLoad()
+    await wotAssetsLoad()
+    await forumLoader()
+    await publicApiLoad()
+  } finally {
+    clearTimeout(timeout)
   }
-
-  alreadyWorkingError = 0
-  isWorking = true
-
-  await wotSrcLoad()
-  await wotAssetsLoad()
-  await forumLoader()
-  await publicApiLoad()
-
-  isWorking = false
 })
