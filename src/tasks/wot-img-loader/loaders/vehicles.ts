@@ -1,6 +1,6 @@
 import { Glob } from 'bun'
 import { S3Client as AwsS3Client } from '@aws-sdk/client-s3'
-import sharp from 'sharp'
+import sharp, { OverlayOptions } from 'sharp'
 import { uploader } from '../../../utils/assetsUploader'
 import { filenameAndExtension } from '../utils'
 import { createSpriteAtlas } from '../spriteAtlas'
@@ -27,22 +27,21 @@ async function loadSmall(root: string, upload: Uploader) {
   const small = [...new Glob(`${root}/gui/maps/icons/vehicle/small/*-*.png`).scanSync()]
 
   for (const filePath of small) {
-    const fileContent = await Bun.file(filePath).bytes()
+    const file = Bun.file(filePath)
 
     const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
     const targetName = name.split('-').slice(1).join('-').toLowerCase()
 
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload(`vehicles/small/${targetName}.png`, fileContent)
-    await upload(`vehicles/small/${targetName}.webp`, webpBuffer)
+    const webpBytes = await file.image().webp({ quality: 80 }).bytes()
+    await upload(`vehicles/small/${targetName}.png`, await file.bytes())
+    await upload(`vehicles/small/${targetName}.webp`, webpBytes)
   }
 
   const smallNoImage = Bun.file(`${root}/gui/maps/icons/vehicle/small/noImage.png`)
   if (await smallNoImage.exists()) {
-    const fileContent = await smallNoImage.bytes()
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload('vehicles/small/no-image.png', fileContent)
-    await upload('vehicles/small/no-image.webp', webpBuffer)
+    const webpBytes = await smallNoImage.image().webp({ quality: 80 }).bytes()
+    await upload('vehicles/small/no-image.png', await smallNoImage.bytes())
+    await upload('vehicles/small/no-image.webp', webpBytes)
   }
 
   console.log('Vehicles small images loaded')
@@ -52,14 +51,14 @@ async function loadSmall(root: string, upload: Uploader) {
 async function loadMedium(root: string, upload: Uploader) {
   const medium = [...new Glob(`${root}/gui/maps/icons/vehicle/420x307/*.png`).scanSync()]
   for (const filePath of medium) {
-    const fileContent = await Bun.file(filePath).bytes()
+    const file = Bun.file(filePath)
 
     const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
     const targetName = name.toLowerCase()
 
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload(`vehicles/medium/${targetName}.png`, fileContent)
-    await upload(`vehicles/medium/${targetName}.webp`, webpBuffer)
+    const webpBytes = await file.image().webp({ quality: 80 }).bytes()
+    await upload(`vehicles/medium/${targetName}.png`, await file.bytes())
+    await upload(`vehicles/medium/${targetName}.webp`, webpBytes)
   }
 
   console.log('Vehicles medium images loaded')
@@ -68,22 +67,21 @@ async function loadMedium(root: string, upload: Uploader) {
 async function loadPreview(root: string, upload: Uploader) {
   const preview = [...new Glob(`${root}/gui/maps/icons/vehicle/*-*.png`).scanSync()]
   for (const filePath of preview) {
-    const fileContent = await Bun.file(filePath).bytes()
+    const file = Bun.file(filePath)
 
     const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
     const targetName = name.split('-').slice(1).join('-').toLowerCase()
 
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload(`vehicles/preview/${targetName}.png`, fileContent)
-    await upload(`vehicles/preview/${targetName}.webp`, webpBuffer)
+    const webpBytes = await file.image().webp({ quality: 80 }).bytes()
+    await upload(`vehicles/preview/${targetName}.png`, await file.bytes())
+    await upload(`vehicles/preview/${targetName}.webp`, webpBytes)
   }
 
   const previewNoImage = Bun.file(`${root}/gui/maps/icons/vehicle/noImage.png`)
   if (await previewNoImage.exists()) {
-    const fileContent = await previewNoImage.bytes()
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload('vehicles/preview/no-image.png', fileContent)
-    await upload('vehicles/preview/no-image.webp', webpBuffer)
+    const webpBytes = await previewNoImage.image().webp({ quality: 80 }).bytes()
+    await upload('vehicles/preview/no-image.png', await previewNoImage.bytes())
+    await upload('vehicles/preview/no-image.webp', webpBytes)
   }
 
   console.log('Vehicles preview images loaded')
@@ -175,7 +173,7 @@ async function generateSmallSprite(root: string, game: 'mt' | 'wot', upload: Upl
       }
     })
 
-    const prepare: sharp.OverlayOptions[] = []
+    const prepare: OverlayOptions[] = []
 
     for (const item of atlas.data) {
       const targetWidth = item.width ?? atlas.info.defaultItemSize.width

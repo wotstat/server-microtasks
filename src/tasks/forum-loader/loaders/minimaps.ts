@@ -1,6 +1,5 @@
 import { clickhouse } from '@/db'
 import { S3Client } from '@aws-sdk/client-s3'
-import sharp from 'sharp'
 import { uploader } from '../../../utils/assetsUploader'
 import { Database } from 'bun:sqlite'
 import { $ } from 'bun'
@@ -151,11 +150,11 @@ export async function loadMinimaps(cookies: string, version: string, bucket: S3C
       continue
     }
 
-    const fileContent = Buffer.from(await res.arrayBuffer())
+    const fileContent = new Uint8Array(await res.arrayBuffer())
 
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
+    const webpBytes = await new Bun.Image(fileContent).webp({ quality: 80 }).bytes()
     await upload(`arenas/minimap-hd/${minimap.tag}.png`, fileContent)
-    await upload(`arenas/minimap-hd/${minimap.tag}.webp`, webpBuffer)
+    await upload(`arenas/minimap-hd/${minimap.tag}.webp`, webpBytes)
 
     updateLastHref.run({ tag: minimap.tag, gameVersion: version, lastHref: minimap.link })
     console.log(`Uploaded minimap for arena '${minimap.tag}'`)
@@ -165,4 +164,3 @@ export async function loadMinimaps(cookies: string, version: string, bucket: S3C
   console.log('Done loading minimaps')
 
 }
-

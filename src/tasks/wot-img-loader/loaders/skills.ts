@@ -1,6 +1,5 @@
 import { Glob } from 'bun'
 import { S3Client } from '@aws-sdk/client-s3'
-import sharp from 'sharp'
 import { uploader } from '../../../utils/assetsUploader'
 import { filenameAndExtension } from '../utils'
 
@@ -33,19 +32,19 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
     const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
     if (!intersectedNames.has(name)) continue
 
-    const fileContent = await Bun.file(filePath).bytes()
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload(`skills/large/${name}.png`, fileContent)
-    await upload(`skills/large/${name}.webp`, webpBuffer)
+    const file = Bun.file(filePath)
+    const webpBytes = await file.image().webp({ quality: 80 }).bytes()
+    await upload(`skills/large/${name}.png`, await file.bytes())
+    await upload(`skills/large/${name}.webp`, webpBytes)
   }
 
   for (const filePath of big) {
     const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
     if (!intersectedNames.has(name)) continue
 
-    const fileContent = await Bun.file(filePath).bytes()
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload(`skills/medium/${name}.png`, fileContent)
-    await upload(`skills/medium/${name}.webp`, webpBuffer)
+    const file = Bun.file(filePath)
+    const webpBytes = await file.image().webp({ quality: 80 }).bytes()
+    await upload(`skills/medium/${name}.png`, await file.bytes())
+    await upload(`skills/medium/${name}.webp`, webpBytes)
   }
 }

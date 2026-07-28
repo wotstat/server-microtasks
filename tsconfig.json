@@ -19,7 +19,12 @@
     ],
     "rootDir": "./src",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-  }
+  },
+  "exclude": [
+    "dev-data"
+  ]
 }

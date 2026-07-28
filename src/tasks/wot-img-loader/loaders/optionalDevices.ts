@@ -1,6 +1,5 @@
 import { Glob } from 'bun'
 import { S3Client } from '@aws-sdk/client-s3'
-import sharp from 'sharp'
 import { uploader } from '../../../utils/assetsUploader'
 import { filenameAndExtension } from '../utils'
 import { clickhouse } from '@/db'
@@ -29,11 +28,11 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
       const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
       if (!icons.has(name)) continue
 
-      const fileContent = await Bun.file(filePath).bytes()
+      const file = Bun.file(filePath)
 
-      const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-      await upload(`optionalDevices/${size.name}/${name}.png`, fileContent)
-      await upload(`optionalDevices/${size.name}/${name}.webp`, webpBuffer)
+      const webpBytes = await file.image().webp({ quality: 80 }).bytes()
+      await upload(`optionalDevices/${size.name}/${name}.png`, await file.bytes())
+      await upload(`optionalDevices/${size.name}/${name}.webp`, webpBytes)
     }
   }
 
@@ -42,10 +41,10 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
     const { nameWithoutExt: name, ext } = filenameAndExtension(filePath)
     if (!icons.has(name)) continue
 
-    const fileContent = await Bun.file(filePath).bytes()
+    const file = Bun.file(filePath)
 
-    const webpBuffer = await sharp(fileContent).webp({ quality: 80 }).toBuffer()
-    await upload(`optionalDevices/small/${name}.png`, fileContent)
-    await upload(`optionalDevices/small/${name}.webp`, webpBuffer)
+    const webpBytes = await file.image().webp({ quality: 80 }).bytes()
+    await upload(`optionalDevices/small/${name}.png`, await file.bytes())
+    await upload(`optionalDevices/small/${name}.webp`, webpBytes)
   }
 }

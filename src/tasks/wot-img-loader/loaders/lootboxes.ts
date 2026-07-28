@@ -27,10 +27,10 @@ export async function load(root: string, game: 'mt' | 'wot', version: string, bu
       const largeFile = Bun.file(`${root}/gui/maps/icons/quests/bonuses/${size}/${name}.png`)
 
       if (await largeFile.exists()) {
-        const largeContent = await sharp(await largeFile.bytes()).resize(600, 450).toBuffer()
-        const largeWebpBuffer = await sharp(largeContent).webp({ quality: 75, alphaQuality: 20, smartSubsample: true }).toBuffer()
+        const largePngBytes = await largeFile.image().resize(600, 450).png().bytes()
+        const largeWebpBuffer = await sharp(largePngBytes).webp({ quality: 75, alphaQuality: 20, smartSubsample: true }).toBuffer()
 
-        await upload(`lootboxes/large/${name}.png`, largeContent)
+        await upload(`lootboxes/large/${name}.png`, largePngBytes)
         await upload(`lootboxes/large/${name}.webp`, largeWebpBuffer)
 
         hasLargeFile = true
