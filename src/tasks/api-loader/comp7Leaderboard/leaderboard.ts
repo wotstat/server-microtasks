@@ -47,10 +47,10 @@ async function loadPage(baseUrl: string, pageNumber: number): Promise<PageResult
       const response = await fetch(`${baseUrl}/wgelen/wot/v1/get_leaderboard?event_id=comp7&leaderboard_id=0&page_number=${pageNumber}`)
       lastStatus = response.status
 
+      if (response.status === 409) return { ok: false, status: response.status } // EventDoesNotExist
+
       const data = await response.json() as Comp7LeaderboardResponse | null
       if (data && data.meta && data.data) return { ok: true, data }
-
-      if (response.status === 409) return { ok: false, status: response.status } // EventDoesNotExist
 
       console.error(`Invalid leaderboard page ${pageNumber} from ${baseUrl} (status ${response.status}, attempt ${attempt}/${PAGE_ATTEMPTS})`, data)
     } catch (error) {
