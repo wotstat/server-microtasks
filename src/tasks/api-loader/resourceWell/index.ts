@@ -7,7 +7,7 @@ import {
   parseUInt,
 } from './protocol'
 
-/*
+/* LESTA
 from helpers import dependency
 from skeletons.gui.lobby_context import ILobbyContext
 from skeletons.gui.game_control import IResourceWellController
@@ -24,6 +24,35 @@ print('regular sequence =', rw.getRewardSequence(False))
 print('top channel =', 'suv_' + rw.getRewardSequence(True))
 print('regular channel =', 'suv_' + rw.getRewardSequence(False))
 */
+
+
+/* WG
+from helpers import dependency
+from skeletons.gui.lobby_context import ILobbyContext
+from skeletons.gui.resource_well import IResourceWellController
+from resource_well.gui.feature.resource_well_helpers import getNumberChannelName
+
+lobby = dependency.instance(ILobbyContext)
+rw = dependency.instance(IResourceWellController)
+
+cfg = lobby.getServerSettings().getReactiveCommunicationConfig()
+
+print('enabled =', cfg.isEnabled)
+print('url =', cfg.url)
+print('active =', rw.isActive())
+print('season =', rw.config.season)
+
+for rewardID, reward in rw.config.getSortedRewardsByOrder():
+    sequence = rw.getRewardSequence(rewardID)
+    channel = getNumberChannelName(rewardID, resourceWell=rw)
+
+    print(
+        'rewardID =', rewardID,
+        'serial =', reward.isSerial,
+        'sequence =', sequence,
+        'channel =', channel
+    )
+*/
 const RESOURCE_WELL_CONFIGS: { region: string, url: string, channels: string[] }[] = [
   {
     region: 'RU',
@@ -34,6 +63,13 @@ const RESOURCE_WELL_CONFIGS: { region: string, url: string, channels: string[] }
 
       'suv_rws12prodtop',
       'suv_rws12prodbasic',
+    ],
+  },
+  {
+    region: 'EU',
+    url: 'wss://wgrg-eu.wargaming.net:443/fanout',
+    channels: [
+      'suv_1342', // DERENDAL
     ],
   },
 ]
