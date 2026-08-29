@@ -1,8 +1,6 @@
 FROM oven/bun:1.3.14-alpine AS base
 WORKDIR /app
 
-RUN apk add --no-cache git
-
 COPY package.json ./
 COPY bun.lockb ./
 RUN bun install

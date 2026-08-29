@@ -1,6 +1,4 @@
 import { connect } from './db'
-import { load as wotSrcLoad } from './tasks/wot-src-loader'
-import { load as wotAssetsLoad } from './tasks/wot-img-loader'
 import { load as forumLoader } from './tasks/forum-loader'
 import { setup as setupApiLoader } from './tasks/api-loader'
 import { load as publicApiLoad } from './tasks/public-api-loader'
@@ -12,8 +10,6 @@ if (!await connect({ timeout: 10 })) {
 }
 
 await setupApiLoader()
-// await wotSrcLoad()
-// await wotAssetsLoad()
 // await forumLoader()
 // await publicApiLoad()
 
@@ -26,8 +22,6 @@ Bun.cron('0 */2 * * *', async () => {
   }, TASK_TIMEOUT)
 
   try {
-    await wotSrcLoad()
-    await wotAssetsLoad()
     await forumLoader()
     await publicApiLoad()
   } finally {
