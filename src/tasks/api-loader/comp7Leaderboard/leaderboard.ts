@@ -116,6 +116,11 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
 
   const insertValues = allData.map(item => {
     const rating = Number.parseInt(item.p2)
+    const division = Number(item.p1)
+    if (!Number.isInteger(division) || division < 1 || division > 255) {
+      throw new Error(`Invalid Comp7 division ${item.p1} from ${baseUrl}`)
+    }
+    const elite = [11, 12, 13].includes(division)
 
     return {
       region,
@@ -127,7 +132,9 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
       rank: item.rank,
       rating: rating,
       battlesCount: Number.parseInt(item.p3),
-      elite: ['11', '12', '13'].includes(item.p1)
+      division,
+      oldElite: elite,
+      elite
     }
   })
 
