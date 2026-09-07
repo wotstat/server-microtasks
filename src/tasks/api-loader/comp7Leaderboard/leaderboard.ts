@@ -17,8 +17,8 @@ type Comp7LeaderboardResponse = {
     last_leaderboard_recalculation_ts: number
     next_leaderboard_recalculation_ts: number | null
     recalculation_interval: number | null
-    elite_rank_points_threshold: number
-    elite_rank_position_threshold: number
+    elite_rank_points_threshold: number | null
+    elite_rank_position_threshold: number | null
   }
   data: {
     spa_id: number
@@ -77,7 +77,6 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   const totalPages = firstPageData.meta.pages_amount
   const lastRecalculationTs = firstPageData.meta.last_leaderboard_recalculation_ts
   const nextRecalculationTs = firstPageData.meta.next_leaderboard_recalculation_ts
-  const eliteRankPositionThreshold = firstPageData.meta.elite_rank_position_threshold
 
   const nextLoadTime = (() => {
     if (nextRecalculationTs == null) return new Date(Date.now() + ONE_MINUTE * 5)
@@ -128,7 +127,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
       rank: item.rank,
       rating: rating,
       battlesCount: Number.parseInt(item.p3),
-      elite: item.rank <= eliteRankPositionThreshold
+      elite: ['11', '12', '13'].includes(item.p1)
     }
   })
 
