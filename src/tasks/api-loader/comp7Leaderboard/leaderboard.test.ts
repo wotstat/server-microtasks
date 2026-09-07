@@ -45,6 +45,8 @@ for (const region of ['RU', 'EU']) {
         expect.objectContaining({ division: 23, oldElite: false })
       ]))
       expect(values).toHaveLength(6)
+      if (!Array.isArray(values)) throw new Error('Expected leaderboard rows')
+      for (const row of values) expect(row).not.toHaveProperty('elite')
     } finally {
       await server.stop(true)
     }

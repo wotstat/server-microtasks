@@ -133,8 +133,7 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
       rating: rating,
       battlesCount: Number.parseInt(item.p3),
       division,
-      oldElite: elite,
-      elite
+      oldElite: elite
     }
   })
 
@@ -142,7 +141,8 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   await clickhouse.insert({
     table: 'WOT.Comp7Leaderboard',
     values: insertValues,
-    format: 'JSONEachRow'
+    format: 'JSONEachRow',
+    clickhouse_settings: { input_format_defaults_for_omitted_fields: 1 }
   })
   lastProcessedRecalculationTs.set(processedKey, lastRecalculationTs)
   console.log(`Leaderboard data inserted for ${baseUrl}`)
