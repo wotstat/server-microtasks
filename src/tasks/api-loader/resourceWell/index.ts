@@ -157,7 +157,7 @@ function connect(config: { region: string, url: string, channels: string[] }) {
             values: [{
               region: config.region,
               channel: messageChannel,
-              dateTime: new Date().getTime(),
+              dateTime: Date.now() / 1000,
               remainingLots: payload.remainingValues,
               givenLots: payload.givenValues,
             }],

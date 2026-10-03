@@ -46,7 +46,7 @@ export async function load(region: string, baseUrl: string) {
     values: [{
       region,
       balance: balanceData.balance,
-      dateTime: Math.round(new Date().getTime())
+      dateTime: Date.now() / 1000
     }],
     format: 'JSONEachRow'
   })
