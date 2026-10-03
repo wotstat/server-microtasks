@@ -6,6 +6,9 @@ const clickhouse = createClient({
   password: Bun.env.CLICKHOUSE_PASSWORD,
   request_timeout: 120000,
   keep_alive: { enabled: false },
+  clickhouse_settings: {
+    input_format_read_datetime_number_as_raw_value: 1
+  }
 })
 
 async function connect(options: { timeout?: number }) {
