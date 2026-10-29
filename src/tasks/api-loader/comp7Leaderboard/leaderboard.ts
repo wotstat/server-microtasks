@@ -7,8 +7,8 @@ const ONE_SECOND = 1000
 const ONE_MINUTE = 60 * ONE_SECOND
 const ONE_HOUR = 60 * ONE_MINUTE
 
-const PAGE_ATTEMPTS = 5
-const PAGE_RETRY_DELAY = 2 * ONE_SECOND
+const PAGE_ATTEMPTS = 3
+const PAGE_RETRY_DELAY = 3 * ONE_SECOND
 
 type Comp7LeaderboardResponse = {
   meta: {
@@ -69,13 +69,13 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   const firstPage = await loadPage(baseUrl, 1)
 
   if (!firstPage.ok) {
-    if (firstPage.status !== 409) // EventDoesNotExist
-      console.error('Invalid response from leaderboard API', { baseUrl, status: firstPage.status })
-
     if (firstPage.status >= 500) {
       if (region !== 'RPT')
         console.error(`Leaderboard load from ${baseUrl} failed: page 1 is unavailable (status ${firstPage.status})`)
     }
+
+    else if (firstPage.status !== 409) // EventDoesNotExist
+      console.error('Invalid response from leaderboard API', { baseUrl, status: firstPage.status })
 
     return { scheduleNextLoad: new Date(Date.now() + ONE_MINUTE * 5) }
   }
