@@ -58,11 +58,14 @@ const RESOURCE_WELL_CONFIGS: { region: string, url: string, channels: string[] }
     region: 'RU',
     url: 'wss://hermod-ru.lstprod.net:443/fanout',
     channels: [
-      'suv_rws11prodtop',
-      'suv_rws11prodbasic',
-
       'suv_rws12prodtop',
       'suv_rws12prodbasic',
+
+      'suv_rws13prodtop',
+      'suv_rws13prodbasic',
+
+      'suv_rws14prodtop',
+      'suv_rws14prodbasic',
     ],
   },
   {
