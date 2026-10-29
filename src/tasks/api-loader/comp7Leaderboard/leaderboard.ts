@@ -48,7 +48,7 @@ async function loadPage(baseUrl: string, pageNumber: number): Promise<PageResult
       lastStatus = response.status
 
       if (response.status === 409) return { ok: false, status: response.status } // EventDoesNotExist
-      if (response.status >= 500) continue
+      if (response.status >= 500) return { ok: false, status: response.status } // Server error, retry
 
       const data = await response.json() as Comp7LeaderboardResponse | null
       if (data && data.meta && data.data) return { ok: true, data }
@@ -71,6 +71,12 @@ export async function load(region: string, baseUrl: string): Promise<LoaderResul
   if (!firstPage.ok) {
     if (firstPage.status !== 409) // EventDoesNotExist
       console.error('Invalid response from leaderboard API', { baseUrl, status: firstPage.status })
+
+    if (firstPage.status >= 500) {
+      if (region !== 'RPT')
+        console.error(`Leaderboard load from ${baseUrl} failed: page 1 is unavailable (status ${firstPage.status})`)
+    }
+
     return { scheduleNextLoad: new Date(Date.now() + ONE_MINUTE * 5) }
   }
 
