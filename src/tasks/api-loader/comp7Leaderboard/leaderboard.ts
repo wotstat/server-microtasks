@@ -48,6 +48,7 @@ async function loadPage(baseUrl: string, pageNumber: number): Promise<PageResult
       lastStatus = response.status
 
       if (response.status === 409) return { ok: false, status: response.status } // EventDoesNotExist
+      if (response.status >= 500) continue
 
       const data = await response.json() as Comp7LeaderboardResponse | null
       if (data && data.meta && data.data) return { ok: true, data }
